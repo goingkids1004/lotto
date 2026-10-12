@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사주 행운번호 · 두꺼비가 알려주는 로또당첨번호</title>
+<link rel="icon" href="logo.png">
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e5e7eb;
+  --accent: #2f6fde; --warn: #e0533d; --ok: #22a35a; --bar: #22a35a; --bar-hi: #e0533d;
+  --b1: #f5b800; --b2: #3b82f6; --b3: #e5484d; --b4: #8b8f98; --b5: #22a35a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+    --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+  --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+h1 { font-size: 20px; margin: 0 0 2px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.note { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--warn);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+.note b { color: var(--text); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+.panel h2 { font-size: 15px; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.panel h2 small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; }
+.form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+input, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 7px 10px; width: 100%; min-width: 0; }
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 6px 14px; margin-top: 12px; font-size: 13px; }
+.checks label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.checks input { width: auto; }
+.hint { color: var(--muted); font-size: 12px; }
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+.actions select { width: auto; }
+.btn { font: inherit; font-weight: 700; color: #fff; background: var(--accent); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 8px 18px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn { white-space: nowrap; }
+.btn:disabled { opacity: .5; cursor: default; }
+.msg { font-size: 13px; }
+.msg.err { color: var(--warn); }
+.msg.ok { color: var(--ok); }
+.ball { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; text-shadow: 0 1px 1px rgba(0,0,0,.25); flex: none; }
+.ball.sm { width: 24px; height: 24px; font-size: 12px; }
+.c1 { background: var(--b1); } .c2 { background: var(--b2); } .c3 { background: var(--b3); }
+.c4 { background: var(--b4); } .c5 { background: var(--b5); }
+.ball.fix { outline: 3px solid var(--text); outline-offset: 1px; }
+.balls { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.sets { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+.set .no { font-weight: 700; width: 18px; color: var(--muted); }
+.set .tag { font-size: 12px; color: var(--muted); }
+.freq { display: grid; grid-template-columns: repeat(45, minmax(0, 1fr)); gap: 2px; align-items: end; height: 140px; }
+.freq .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.freq .bar { width: 100%; background: var(--bar); border-radius: 3px 3px 0 0; opacity: .85; min-height: 2px; }
+.freq .bar.top { background: var(--bar-hi); }
+.freq .lbl { font-size: 9px; color: var(--muted); margin-top: 3px; }
+.rank { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; }
+.rank div { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.rank b { color: var(--muted); font-weight: 600; margin-right: 4px; }
+.count { color: var(--muted); font-size: 12px; }
+.tablewrap { overflow-x: auto; }
+.bt { width: 100%; border-collapse: collapse; margin-top: 10px; white-space: nowrap; }
+.bt td, .bt th { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; }
+.bt td:first-child, .bt th:first-child { text-align: left; }
+.bt th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.verdict { margin: 10px 0 0; font-size: 13px; }
+progress { width: 160px; }
+@media (max-width: 600px) { .freq .lbl { display: none; } }
+.topnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.topnav a { text-decoration: none; font-weight: 600; font-size: 13px; color: var(--muted); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+.topnav a.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+.brand { margin: 0 0 12px; }
+.brand a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand img { width: 56px; height: 56px; object-fit: contain; }
+.brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+@media (max-width: 600px) { .brand img { width: 44px; height: 44px; } .brand span { font-size: 18px; } }
+.foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
+@media (max-width: 600px) {
+  .wrap { padding: 14px 12px 32px; }
+  h1 { font-size: 18px; }
+  .sub { font-size: 12.5px; margin-bottom: 12px; }
+  .panel { padding: 12px; }
+  .topnav { gap: 8px; }
+  .topnav a { flex: 1; text-align: center; padding: 9px 8px; font-size: 14px; }
+  .foot { line-height: 1.7; }
+}.settings summary { list-style: none; cursor: pointer; }
+.settings summary::-webkit-details-marker { display: none; }
+.settings summary h2 { margin: 0; }
+.settings summary h2::before { content: '▸'; color: var(--muted); margin-right: 6px; }
+.settings[open] summary h2::before { content: '▾'; }
+.settings[open] summary { margin-bottom: 12px; }
+@media (max-width: 600px) {
+  .form { grid-template-columns: 1fr 1fr; }
+  .form label:first-child { grid-column: 1 / -1; }
+  .checks { grid-template-columns: 1fr; }
+  .set { gap: 8px; padding: 10px; }
+  .set .tag { width: 100%; padding-left: 26px; }
+  .sets .ball { width: 34px; height: 34px; font-size: 14px; }
+  .actions .btn { flex: 1; padding: 11px 12px; }
+  .actions .msg { width: 100%; }
+  .note { font-size: 12.5px; padding: 10px 12px; }
+  .bt th:nth-child(5), .bt td:nth-child(5) { display: none; }
+  .bt td, .bt th { padding: 6px; font-size: 12.5px; }
+}
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; }
+.pillar { border: 1px solid var(--line); border-radius: 10px; padding: 10px 4px; }
+.pillar .lbl { font-size: 12px; color: var(--muted); }
+.pillar .gz { font-size: 26px; font-weight: 800; line-height: 1.25; margin: 4px 0; }
+.pillar .kr { font-size: 13px; }
+.pillar .el { display: flex; justify-content: center; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.pillar.unknown .gz { color: var(--muted); }
+.tag-el { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 999px; color: #fff; }
+.e-wood { background: #22a35a; } .e-fire { background: #e5484d; } .e-earth { background: #c58a1b; }
+.e-metal { background: #8b8f98; } .e-water { background: #3b82f6; }
+.ohaeng { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+.oh { text-align: center; }
+.oh .barbox { height: 90px; display: flex; align-items: flex-end; justify-content: center; }
+.oh .bar2 { width: 60%; border-radius: 6px 6px 0 0; min-height: 4px; }
+.oh .nm { font-size: 13px; font-weight: 700; margin-top: 4px; }
+.oh .ct { font-size: 12px; color: var(--muted); }
+.oh.lucky .nm::after { content: ' ★'; color: var(--warn); }
+.reading { margin-top: 12px; font-size: 14px; line-height: 1.7; }
+.reading b { color: var(--text); }
+.bigset { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 6px 0 4px; }
+.bigset .ball { width: 46px; height: 46px; font-size: 18px; }
+.ball.lucky { box-shadow: 0 0 0 3px var(--panel), 0 0 0 5px var(--warn); }
+.privacy { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.inline { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.inline label { flex: 1 1 90px; }
+.inline label:last-child { flex: 2 1 200px; }
+@media (max-width: 600px) {
+  .pillar .gz { font-size: 22px; }
+  .bigset .ball { width: 40px; height: 40px; font-size: 16px; }
+  .ohaeng { gap: 4px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
+  <nav class="topnav"><a href="predict.html">예상번호 생성</a><a href="./">당첨번호 조회</a><a href="saju.html" class="on">사주 행운번호</a></nav>
+  <h1 id="title">내 사주로 보는 행운번호</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="note"><b>재미로 보세요.</b> 사주와 로또 당첨은 아무 관계가 없고, 어떤 번호든 1등 확률은 1/8,145,060으로 같습니다.
+    생년월일로 사주팔자를 풀어 부족한 오행을 채워 주는 숫자를 골라 드리는 재미용 페이지입니다.</div>
+
+  <div class="panel">
+    <h2>내 정보 입력 <small>양력 기준</small></h2>
+    <div class="inline">
+      <label>태어난 해 (양력)
+        <select id="by"></select>
+      </label>
+      <label>월
+        <select id="bm"></select>
+      </label>
+      <label>일
+        <select id="bd"></select>
+      </label>
+      <label>태어난 시간
+        <select id="hour">
+          <option value="-1">모름</option>
+          <option value="0">자시 (23:30~01:29)</option>
+          <option value="1">축시 (01:30~03:29)</option>
+          <option value="2">인시 (03:30~05:29)</option>
+          <option value="3">묘시 (05:30~07:29)</option>
+          <option value="4">진시 (07:30~09:29)</option>
+          <option value="5">사시 (09:30~11:29)</option>
+          <option value="6">오시 (11:30~13:29)</option>
+          <option value="7">미시 (13:30~15:29)</option>
+          <option value="8">신시 (15:30~17:29)</option>
+          <option value="9">유시 (17:30~19:29)</option>
+          <option value="10">술시 (19:30~21:29)</option>
+          <option value="11">해시 (21:30~23:29)</option>
+        </select>
+      </label>
+    </div>
+    <div class="actions">
+      <button class="btn" id="go">행운번호 보기</button>
+      <span class="msg" id="msg"></span>
+    </div>
+    <p class="privacy">입력한 생년월일은 이 기기 안에서만 계산되고 어디에도 전송되지 않습니다. 음력 생일은 양력으로 바꿔 입력해 주세요.</p>
+  </div>
+
+  <div id="result" hidden>
+    <div class="panel">
+      <h2 id="luckyTitle">이번 주 행운번호</h2>
+      <div class="bigset" id="mainSet"></div>
+      <p class="privacy" style="text-align:center" id="mainNote"></p>
+      <div class="sets" id="moreSets"></div>
+      <div class="actions">
+        <button class="btn ghost" id="copy">번호 복사</button>
+        <span class="msg" id="copyMsg"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>나의 사주팔자 <small id="ddi"></small></h2>
+      <div class="pillars" id="pillars"></div>
+      <div class="ohaeng" id="ohaeng"></div>
+      <div class="reading" id="reading"></div>
+    </div>
+  </div>
+
+<p class="foot">여러분의 후원은 개발자에게 큰 도움이 됩니다. 후원계좌: 카카오뱅크 3333-01-4475921 (예금주: 최성욱)<br>데이터 출처: 동행복권 · 매주 토요일 추첨 후 자동 갱신</p>
+</div>
+
+<script src="data/lotto.js"></script>
+<script>
+const DATA = window.LOTTO_DATA || [];
+const $ = id => document.getElementById(id);
+const colorOf = n => n <= 10 ? 'c1' : n <= 20 ? 'c2' : n <= 30 ? 'c3' : n <= 40 ? 'c4' : 'c5';
+const ball = (n, cls) => `<span class="ball ${colorOf(n)}${cls ? ' ' + cls : ''}">${n}</span>`;
+
+// ───────── 간지 기본표 ─────────
+const STEM_H = '甲乙丙丁戊己庚辛壬癸', STEM_K = '갑을병정무기경신임계';
+const BR_H = '子丑寅卯辰巳午未申酉戌亥', BR_K = '자축인묘진사오미신유술해';
+const ANIMAL = ['쥐', '소', '호랑이', '토끼', '용', '뱀', '말', '양', '원숭이', '닭', '개', '돼지'];
+const EL = ['wood', 'fire', 'earth', 'metal', 'water'];
+const EL_K = { wood: '목(木)', fire: '화(火)', earth: '토(土)', metal: '금(金)', water: '수(水)' };
+const EL_COLOR = { wood: '#22a35a', fire: '#e5484d', earth: '#c58a1b', metal: '#8b8f98', water: '#3b82f6' };
+const STEM_EL = ['wood', 'wood', 'fire', 'fire', 'earth', 'earth', 'metal', 'metal', 'water', 'water'];
+const BR_EL = ['water', 'earth', 'wood', 'wood', 'earth', 'fire', 'fire', 'earth', 'metal', 'metal', 'earth', 'water'];
+// 하도(河圖) 수리: 끝자리 숫자 ↔ 오행
+const EL_DIGITS = { water: [1, 6], fire: [2, 7], wood: [3, 8], metal: [4, 9], earth: [5, 0] };
+const EL_TRAIT = {
+  wood: '나무처럼 곧게 뻗어 나가는 성장과 시작의 기운',
+  fire: '불처럼 밝고 뜨거운 열정과 표현의 기운',
+  earth: '땅처럼 묵직하게 받쳐 주는 믿음과 안정의 기운',
+  metal: '쇠처럼 단단하고 결단력 있는 원칙의 기운',
+  water: '물처럼 유연하게 흐르는 지혜와 소통의 기운',
+};
+const mod = (a, n) => ((a % n) + n) % n;
+
+// 절기(월의 시작) 근사일: [양력 월, 일, 월지 index]  (입춘 ≈ 2/4 기준)
+const TERMS = [[1, 6, 1], [2, 4, 2], [3, 6, 3], [4, 5, 4], [5, 6, 5], [6, 6, 6], [7, 7, 7], [8, 8, 8], [9, 8, 9], [10, 8, 10], [11, 7, 11], [12, 7, 0]];
+
+function pillarsOf(y, m, d, hourBranch) {
+  // 년주: 입춘 전이면 전년도
+  const sajuYear = (m < 2 || (m === 2 && d < 4)) ? y - 1 : y;
+  const yS = mod(sajuYear - 4, 10), yB = mod(sajuYear - 4, 12);
+  // 월주: 절기 기준 월지, 년간으로 월간 결정 (갑기년 → 병인월 ...)
+  let mB = 0; // 1/1~1/5 는 자월(子)
+  for (const [tm, td, br] of TERMS) if (m > tm || (m === tm && d >= td)) mB = br;
+  const fromIn = mod(mB - 2, 12);
+  const mS = mod((yS % 5) * 2 + 2 + fromIn, 10);
+  // 일주: 2000-01-01 = 戊午 (60갑자 index 54)
+  const days = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(2000, 0, 1)) / 86400000);
+  const dIdx = mod(54 + days, 60), dS = dIdx % 10, dB = dIdx % 12;
+  const p = { year: [yS, yB], month: [mS, mB], day: [dS, dB], hour: null, animal: ANIMAL[yB] };
+  if (hourBranch >= 0) p.hour = [mod((dS % 5) * 2 + hourBranch, 10), hourBranch];
+  return p;
+}
+
+// 문자열 → 32bit 해시, 시드 고정 난수 (같은 입력 + 같은 회차 = 같은 번호)
+function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+function pickSet(rand, weight) {
+  const pool = Array.from({ length: 45 }, (_, i) => i + 1), out = [];
+  while (out.length < 6) {
+    let total = 0; for (const n of pool) total += weight[n];
+    let r = rand() * total, idx = pool.length - 1;
+    for (let i = 0; i < pool.length; i++) { r -= weight[pool[i]]; if (r <= 0) { idx = i; break; } }
+    out.push(pool.splice(idx, 1)[0]);
+  }
+  return out.sort((a, b) => a - b);
+}
+
+const last = DATA.length ? DATA[DATA.length - 1] : null;
+const nextNo = last ? last[0] + 1 : 0;
+const nextDate = last ? (() => { const [y, m, d] = last[1].split('-').map(Number); const t = new Date(y, m - 1, d + 7);
+  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; })() : '';
+$('sub').textContent = last ? `${nextNo}회 (${nextDate}) 추첨용 · 매주 회차가 바뀌면 행운번호도 바뀝니다` : '';
+$('luckyTitle').textContent = last ? `${nextNo}회 나의 행운번호` : '이번 주 행운번호';
+
+let lastSets = [];
+
+// 년·월·일 선택 목록 (1900~2030년, 월에 맞춰 일 수 조정)
+const Y_MIN = 1900, Y_MAX = 2030;
+for (let y = Y_MAX; y >= Y_MIN; y--) $('by').insertAdjacentHTML('beforeend', `<option value="${y}">${y}년</option>`);
+for (let m = 1; m <= 12; m++) $('bm').insertAdjacentHTML('beforeend', `<option value="${m}">${m}월</option>`);
+function fillDays() {
+  const y = +$('by').value, m = +$('bm').value, keep = +$('bd').value || 1;
+  const n = new Date(y, m, 0).getDate();
+  $('bd').innerHTML = Array.from({ length: n }, (_, i) => `<option value="${i + 1}">${i + 1}일</option>`).join('');
+  $('bd').value = String(Math.min(keep, n));
+}
+$('by').value = '1990'; $('bm').value = '1'; fillDays();
+$('by').addEventListener('change', fillDays);
+$('bm').addEventListener('change', fillDays);
+
+function run() {
+  const y = +$('by').value, m = +$('bm').value, d = +$('bd').value;
+  if (!(y >= Y_MIN && y <= Y_MAX && m >= 1 && m <= 12 && d >= 1 && d <= 31)) { $('msg').textContent = '생년월일을 골라 주세요'; $('msg').className = 'msg err'; return; }
+  const v = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  $('msg').textContent = '';
+  const hb = +$('hour').value, p = pillarsOf(y, m, d, hb);
+  try { localStorage.setItem('saju_input', JSON.stringify({ v, hb })); } catch (e) {}
+
+  // 오행 개수
+  const cnt = { wood: 0, fire: 0, earth: 0, metal: 0, water: 0 };
+  const cols = [['년주', p.year], ['월주', p.month], ['일주', p.day], ['시주', p.hour]];
+  cols.forEach(([, pr]) => { if (pr) { cnt[STEM_EL[pr[0]]]++; cnt[BR_EL[pr[1]]]++; } });
+  const order = EL.slice().sort((a, b) => cnt[a] - cnt[b] || EL.indexOf(a) - EL.indexOf(b));
+  const lucky = order[0], lucky2 = order[1], strong = order[4];
+  const me = STEM_EL[p.day[0]];
+
+  // 사주 표 (전통 순서: 시 일 월 년 → 화면은 년 월 일 시)
+  $('pillars').innerHTML = cols.map(([lbl, pr]) => pr
+    ? `<div class="pillar"><div class="lbl">${lbl}</div><div class="gz">${STEM_H[pr[0]]}${BR_H[pr[1]]}</div><div class="kr">${STEM_K[pr[0]]}${BR_K[pr[1]]}</div>
+       <div class="el"><span class="tag-el e-${STEM_EL[pr[0]]}">${EL_K[STEM_EL[pr[0]]].slice(0, 1)}</span><span class="tag-el e-${BR_EL[pr[1]]}">${EL_K[BR_EL[pr[1]]].slice(0, 1)}</span></div></div>`
+    : `<div class="pillar unknown"><div class="lbl">${lbl}</div><div class="gz">?</div><div class="kr">시간 모름</div></div>`).join('');
+  $('ddi').textContent = `${p.animal}띠 · 일간 ${STEM_K[p.day[0]]}(${STEM_H[p.day[0]]})`;
+
+  const max = Math.max(...EL.map(e => cnt[e]), 1);
+  $('ohaeng').innerHTML = EL.map(e => `<div class="oh${e === lucky ? ' lucky' : ''}"><div class="barbox"><div class="bar2" style="height:${cnt[e] / max * 100}%;background:${EL_COLOR[e]}"></div></div>
+    <div class="nm">${EL_K[e]}</div><div class="ct">${cnt[e]}개</div></div>`).join('');
+
+  const dg = e => EL_DIGITS[e].join('·');
+  const eul = e => (e === 'wood' || e === 'metal') ? '을' : '를';   // 목·금 → 을, 화·토·수 → 를
+  const names = list => list.map(e => `<b>${EL_K[e]}</b>`).join('·');
+  const maxC = cnt[strong], minC = cnt[lucky];
+  const strongest = EL.filter(e => cnt[e] === maxC), weakest = EL.filter(e => cnt[e] === minC);
+  const balanced = maxC - minC <= 1;
+  $('reading').innerHTML =
+    `<b>나는 ${STEM_K[p.day[0]]}${EL_K[me].slice(0, 1)}(${STEM_H[p.day[0]]}) 일간</b> — ${EL_TRAIT[me]}을 타고났습니다.<br>` +
+    (balanced
+      ? `오행이 비교적 고르게 갖춰진 사주이고, 그중 ${names(weakest)} 기운이 조금 약합니다.<br>`
+      : `사주에서 ${names(strongest)} 기운이 강하고, ${names(weakest)} 기운이 부족합니다` + (minC === 0 ? ' (하나도 없음)' : '') + `.<br>`) +
+    `그래서 <b>${EL_K[lucky]}</b>${eul(lucky)} 채워 주는 끝자리 <b>${dg(lucky)}</b> 숫자와, 그다음으로 약한 <b>${EL_K[lucky2]}</b>의 끝자리 <b>${dg(lucky2)}</b> 숫자를 행운번호에 많이 넣었습니다.` +
+    (p.hour ? '' : '<br><span class="privacy">태어난 시간을 넣으면 시주까지 포함해 더 자세히 풀어 드립니다.</span>');
+
+  // 번호 가중치: 부족한 오행 숫자 ×4, 두 번째 ×2, 일간 오행 ×1.5
+  const w = Array(46).fill(1);
+  for (let n = 1; n <= 45; n++) {
+    const digit = n % 10;
+    if (EL_DIGITS[lucky].includes(digit)) w[n] = 4;
+    else if (EL_DIGITS[lucky2].includes(digit)) w[n] = 2;
+    else if (EL_DIGITS[me].includes(digit)) w[n] = 1.5;
+  }
+  const rand = rng(hash(`${v}|${hb}|${nextNo}`));
+  lastSets = [];
+  while (lastSets.length < 5) { const s = pickSet(rand, w); if (!lastSets.some(x => x.join() === s.join())) lastSets.push(s); }
+  const isLucky = n => EL_DIGITS[lucky].includes(n % 10);
+  $('mainSet').innerHTML = lastSets[0].map(n => ball(n, isLucky(n) ? 'lucky' : '')).join('');
+  $('mainNote').textContent = `테두리 번호 = ${EL_K[lucky]}${(lucky === 'wood' || lucky === 'metal') ? '을' : '를'} 채워 주는 행운 숫자`;
+  $('moreSets').innerHTML = lastSets.slice(1).map((s, i) => `<div class="set"><span class="no">${'BCDE'[i]}</span><div class="balls">${s.map(n => ball(n, isLucky(n) ? 'lucky' : '')).join('')}</div></div>`).join('');
+  $('result').hidden = false;
+  $('copyMsg').textContent = '';
+}
+
+function copyText(txt) {
+  const fallback = () => { const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); return ok; };
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt).then(() => true, fallback);
+  return Promise.resolve(fallback());
+}
+$('copy').addEventListener('click', () => {
+  if (!lastSets.length) return;
+  const txt = `${nextNo}회 사주 행운번호 (두꺼비가 알려주는 로또당첨번호)\n` + lastSets.map((s, i) => `${'ABCDE'[i]}: ${s.join(', ')}`).join('\n');
+  copyText(txt).then(ok => { $('copyMsg').textContent = ok ? '복사했습니다' : '복사하지 못했습니다'; $('copyMsg').className = 'msg ' + (ok ? 'ok' : 'err'); });
+});
+$('go').addEventListener('click', run);
+
+// 지난번 입력 불러오기 (이 기기에만 저장)
+try { const s = JSON.parse(localStorage.getItem('saju_input') || 'null'); if (s && /^\d{4}-\d{2}-\d{2}$/.test(s.v)) { const [y, m, d] = s.v.split('-').map(Number); if (y >= Y_MIN && y <= Y_MAX) { $('by').value = String(y); $('bm').value = String(m); fillDays(); $('bd').value = String(d); $('hour').value = String(s.hb); run(); } } } catch (e) {}
+</script>
+</body>
+</html>
