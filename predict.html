@@ -112,12 +112,7 @@ progress { width: 160px; }
 @media (max-width: 400px) {
   .topnav .x { display: none; }
   .foot { line-height: 1.7; }
-}.settings summary { list-style: none; cursor: pointer; }
-.settings summary::-webkit-details-marker { display: none; }
-.settings summary h2 { margin: 0; }
-.settings summary h2::before { content: '▸'; color: var(--muted); margin-right: 6px; }
-.settings[open] summary h2::before { content: '▾'; }
-.settings[open] summary { margin-bottom: 12px; }
+}
 @media (max-width: 600px) {
   .form { grid-template-columns: 1fr 1fr; }
   .form label:first-child { grid-column: 1 / -1; }
@@ -153,8 +148,8 @@ progress { width: 160px; }
     </div>
   </div>
 
-  <details class="panel settings" id="settings" open>
-    <summary><h2>설정 <small>번호 선택 방식·조건 바꾸기</small></h2></summary>
+  <div class="panel settings" id="settings">
+    <h2>설정 <small>번호 선택 방식·조건 바꾸기</small></h2>
     <div class="form">
       <label>번호 선택 방식
         <select id="strategy">
@@ -189,7 +184,7 @@ progress { width: 160px; }
       <label><input type="checkbox" id="fPrev" checked> 직전 회차 번호 최대 2개</label>
       <label><input type="checkbox" id="fPast" checked> 역대 1등 조합 제외</label>
     </div>
-  </details>
+  </div>
 
   <div class="panel">
     <h2>번호별 선택 가중치 <small id="scoreNote"></small></h2>
@@ -434,7 +429,6 @@ $('btRun').addEventListener('click', runBacktest);
 ['fixed', 'exclude'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') onGenerate(); }));
 
 window.addEventListener('error', e => setMsg('genMsg', '문제가 생겼습니다: ' + e.message, 'err'));
-if (window.innerWidth > 0 && window.innerWidth <= 600) $('settings').open = false;
 renderScore(); onGenerate();
 </script>
 </body>
