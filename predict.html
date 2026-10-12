@@ -46,6 +46,7 @@ input, select { font: inherit; color: var(--text); background: var(--bg); border
 .btn { font: inherit; font-weight: 700; color: #fff; background: var(--accent); border: 1px solid var(--accent);
   border-radius: 8px; padding: 8px 18px; cursor: pointer; }
 .btn.ghost { background: transparent; color: var(--accent); }
+.btn { white-space: nowrap; }
 .btn:disabled { opacity: .5; cursor: default; }
 .msg { font-size: 13px; }
 .msg.err { color: var(--warn); }
@@ -87,7 +88,33 @@ progress { width: 160px; }
 .brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 @media (max-width: 600px) { .brand img { width: 44px; height: 44px; } .brand span { font-size: 18px; } }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
-</style>
+@media (max-width: 600px) {
+  .wrap { padding: 14px 12px 32px; }
+  h1 { font-size: 18px; }
+  .sub { font-size: 12.5px; margin-bottom: 12px; }
+  .panel { padding: 12px; }
+  .topnav { gap: 8px; }
+  .topnav a { flex: 1; text-align: center; padding: 9px 8px; font-size: 14px; }
+  .foot { line-height: 1.7; }
+}.settings summary { list-style: none; cursor: pointer; }
+.settings summary::-webkit-details-marker { display: none; }
+.settings summary h2 { margin: 0; }
+.settings summary h2::before { content: '▸'; color: var(--muted); margin-right: 6px; }
+.settings[open] summary h2::before { content: '▾'; }
+.settings[open] summary { margin-bottom: 12px; }
+@media (max-width: 600px) {
+  .form { grid-template-columns: 1fr 1fr; }
+  .form label:first-child { grid-column: 1 / -1; }
+  .checks { grid-template-columns: 1fr; }
+  .set { gap: 8px; padding: 10px; }
+  .set .tag { width: 100%; padding-left: 26px; }
+  .sets .ball { width: 34px; height: 34px; font-size: 14px; }
+  .actions .btn { flex: 1; padding: 11px 12px; }
+  .actions .msg { width: 100%; }
+  .note { font-size: 12.5px; padding: 10px 12px; }
+  .bt th:nth-child(5), .bt td:nth-child(5) { display: none; }
+  .bt td, .bt th { padding: 6px; font-size: 12.5px; }
+}</style>
 </head>
 <body>
 <div class="wrap">
@@ -101,7 +128,17 @@ progress { width: 160px; }
     맨 아래 백테스트로 무작위보다 나은지 직접 확인할 수 있습니다.</div>
 
   <div class="panel">
-    <h2>설정 <small>바꾼 뒤 [예상번호 생성]을 누르세요</small></h2>
+    <h2 id="setsTitle">예상번호</h2>
+    <div class="sets" id="sets" style="margin-top:0"></div>
+    <div class="actions">
+      <button class="btn" id="gen">예상번호 생성</button>
+      <button class="btn ghost" id="copy">복사</button>
+      <span class="msg" id="genMsg"></span>
+    </div>
+  </div>
+
+  <details class="panel settings" id="settings" open>
+    <summary><h2>설정 <small>번호 선택 방식·조건 바꾸기</small></h2></summary>
     <div class="form">
       <label>번호 선택 방식
         <select id="strategy">
@@ -136,17 +173,7 @@ progress { width: 160px; }
       <label><input type="checkbox" id="fPrev" checked> 직전 회차 번호 최대 2개</label>
       <label><input type="checkbox" id="fPast" checked> 역대 1등 조합 제외</label>
     </div>
-    <div class="actions">
-      <button class="btn" id="gen">예상번호 생성</button>
-      <button class="btn ghost" id="copy">복사</button>
-      <span class="msg" id="genMsg"></span>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h2 id="setsTitle">예상번호</h2>
-    <div class="sets" id="sets" style="margin-top:0"></div>
-  </div>
+  </details>
 
   <div class="panel">
     <h2>번호별 선택 가중치 <small id="scoreNote"></small></h2>
@@ -391,6 +418,7 @@ $('btRun').addEventListener('click', runBacktest);
 ['fixed', 'exclude'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') onGenerate(); }));
 
 window.addEventListener('error', e => setMsg('genMsg', '문제가 생겼습니다: ' + e.message, 'err'));
+if (window.innerWidth > 0 && window.innerWidth <= 600) $('settings').open = false;
 renderScore(); onGenerate();
 </script>
 </body>
