@@ -22,6 +22,7 @@
   --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
 }
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { margin: 0; background: var(--bg); color: var(--text);
   font: 14px/1.5 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
 .wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
@@ -86,7 +87,8 @@ progress { width: 160px; }
 .brand a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
 .brand img { width: 56px; height: 56px; object-fit: contain; }
 .brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-@media (max-width: 600px) { .brand img { width: 44px; height: 44px; } .brand span { font-size: 18px; } }
+@media (max-width: 600px) { .brand a { gap: 8px; } .brand img { width: 44px; height: 44px; } .brand span { font-size: clamp(15px, 4.7vw, 20px); white-space: nowrap; } }
+@media (max-width: 360px) { .brand img { width: 36px; height: 36px; } }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
 @media (max-width: 600px) {
   .wrap { padding: 14px 12px 32px; }
@@ -94,7 +96,10 @@ progress { width: 160px; }
   .sub { font-size: 12.5px; margin-bottom: 12px; }
   .panel { padding: 12px; }
   .topnav { gap: 8px; }
-  .topnav a { flex: 1; text-align: center; padding: 9px 8px; font-size: 14px; }
+  .topnav a { flex: 1 1 0; min-width: 0; text-align: center; padding: 9px 4px; font-size: clamp(12px, 3.6vw, 14px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 400px) {
+  .topnav .x { display: none; }
   .foot { line-height: 1.7; }
 }.settings summary { list-style: none; cursor: pointer; }
 .settings summary::-webkit-details-marker { display: none; }
@@ -151,7 +156,7 @@ progress { width: 160px; }
 <body>
 <div class="wrap">
   <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
-  <nav class="topnav"><a href="predict.html">예상번호 생성</a><a href="./">당첨번호 조회</a><a href="saju.html" class="on">사주 행운번호</a></nav>
+  <nav class="topnav"><a href="predict.html">예상번호<span class="x"> 생성</span></a><a href="./">당첨번호<span class="x"> 조회</span></a><a href="saju.html" class="on">사주 행운<span class="x">번호</span></a></nav>
   <h1 id="title">내 사주로 보는 행운번호</h1>
   <p class="sub" id="sub"></p>
 
