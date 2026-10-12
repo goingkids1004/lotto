@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로또 당첨번호 뷰어</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e5e7eb;
+  --accent: #2f6fde; --row-hover: #f1f5fd; --bar: #2f6fde; --bar-hi: #e0533d;
+  --b1: #f5b800; --b2: #3b82f6; --b3: #e5484d; --b4: #8b8f98; --b5: #22a35a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+    --accent: #6ea0ff; --row-hover: #222936; --bar: #6ea0ff; --bar-hi: #ff7a66;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+  --accent: #6ea0ff; --row-hover: #222936; --bar: #6ea0ff; --bar-hi: #ff7a66;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+h1 { font-size: 20px; margin: 0 0 2px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.card .k { color: var(--muted); font-size: 12px; }
+.card .v { font-size: 18px; font-weight: 700; margin-top: 2px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+.panel h2 { font-size: 15px; margin: 0 0 10px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.panel h2 small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+input, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 7px 10px; min-width: 0; }
+input { flex: 1 1 220px; }
+.ball { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
+  border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; text-shadow: 0 1px 1px rgba(0,0,0,.25); }
+.ball.sm { width: 24px; height: 24px; font-size: 12px; }
+.c1 { background: var(--b1); } .c2 { background: var(--b2); } .c3 { background: var(--b3); }
+.c4 { background: var(--b4); } .c5 { background: var(--b5); }
+.ball.hl { outline: 3px solid var(--text); outline-offset: 1px; }
+.balls { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
+.plus { color: var(--muted); margin: 0 2px; }
+.tablewrap { overflow-x: auto; max-height: 560px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--panel); font-size: 12px; color: var(--muted); z-index: 1; }
+tbody tr:hover { background: var(--row-hover); }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.count { color: var(--muted); font-size: 12px; }
+.freq { display: grid; grid-template-columns: repeat(45, 1fr); gap: 2px; align-items: end; height: 150px; }
+.freq .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; cursor: pointer; }
+.freq .bar { width: 100%; background: var(--bar); border-radius: 3px 3px 0 0; opacity: .85; }
+.freq .col:hover .bar { opacity: 1; }
+.freq .bar.top { background: var(--bar-hi); }
+.freq .lbl { font-size: 9px; color: var(--muted); margin-top: 3px; }
+.tip { color: var(--muted); font-size: 12px; margin-top: 8px; min-height: 18px; }
+.rank { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; font-size: 13px; }
+.rank div { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.rank b { color: var(--muted); font-weight: 600; margin-right: 4px; }
+@media (max-width: 600px) { .freq .lbl { display: none; } }
+.topnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.topnav a { text-decoration: none; font-weight: 600; font-size: 13px; color: var(--muted); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+.topnav a.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+.foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="topnav"><a href="./" class="on">당첨번호 조회</a><a href="predict.html">예상번호 생성</a></nav>
+  <h1>로또 6/45 당첨번호</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="panel">
+    <h2>번호별 출현 횟수 <small id="freqNote">보너스 제외 · 막대를 누르면 그 번호가 나온 회차만 표에 보입니다</small></h2>
+    <div class="freq" id="freq"></div>
+    <div class="tip" id="tip"></div>
+    <div class="rank" id="rank"></div>
+  </div>
+
+  <div class="panel">
+    <h2>회차별 당첨번호 <small class="count" id="count"></small></h2>
+    <div class="controls">
+      <input id="q" type="search" placeholder="회차 또는 번호 검색 (예: 1245 / 7 13 / 2026-10)">
+      <select id="year"><option value="">전체 연도</option></select>
+      <select id="sort"><option value="desc">최신순</option><option value="asc">오래된순</option></select>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>회차</th><th>추첨일</th><th>당첨번호 + 보너스</th><th class="num">1등 당첨자</th><th class="num">1등 당첨금</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+<p class="foot">개인이 만든 비공식 분석 페이지이며 동행복권과 관계가 없습니다 · 데이터 출처: 동행복권 · 매주 토요일 추첨 후 자동 갱신</p>
+</div>
+
+<script src="data/lotto.js"></script>
+<script>if (!window.LOTTO_DATA) document.body.innerHTML = '<p style="padding:24px;font-family:sans-serif">데이터 파일(data/lotto.js)을 불러오지 못했습니다.</p>';</script>
+<script>
+// [회차, 추첨일, n1..n6, 보너스, 1등당첨자수, 1등당첨금]
+const DATA = window.LOTTO_DATA;
+
+const $ = id => document.getElementById(id);
+const colorOf = n => n <= 10 ? 'c1' : n <= 20 ? 'c2' : n <= 30 ? 'c3' : n <= 40 ? 'c4' : 'c5';
+const ball = (n, hl, sm) => `<span class="ball ${colorOf(n)}${hl ? ' hl' : ''}${sm ? ' sm' : ''}">${n}</span>`;
+const won = v => v.toLocaleString('ko-KR') + '원';
+const eok = v => (v / 1e8).toLocaleString('ko-KR', { maximumFractionDigits: 1 }) + '억원';
+
+const first = DATA[0], last = DATA[DATA.length - 1];
+$('sub').textContent = `${first[0]}회 (${first[1]}) ~ ${last[0]}회 (${last[1]}) · 총 ${DATA.length.toLocaleString()}회차 · 출처: 동행복권`;
+
+// 요약 카드
+const paid = DATA.filter(d => d[9] > 0);
+const maxPrize = paid.reduce((a, b) => b[10] > a[10] ? b : a);
+const minPrize = paid.reduce((a, b) => b[10] < a[10] ? b : a);
+const maxWin = DATA.reduce((a, b) => b[9] > a[9] ? b : a);
+const noWin = DATA.filter(d => d[9] === 0).length;
+$('cards').innerHTML = [
+  ['최근 회차', `${last[0]}회`],
+  ['1인 최고 1등 당첨금', `${eok(maxPrize[10])} · ${maxPrize[0]}회`],
+  ['1인 최저 1등 당첨금', `${eok(minPrize[10])} · ${minPrize[0]}회`],
+  ['1등 최다 당첨자', `${maxWin[9]}명 · ${maxWin[0]}회`],
+  ['1등 없는 회차', `${noWin}회`],
+].map(([k, v]) => `<div class="card"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('');
+
+// 연도 필터
+[...new Set(DATA.map(d => d[1].slice(0, 4)))].reverse()
+  .forEach(y => $('year').insertAdjacentHTML('beforeend', `<option value="${y}">${y}년</option>`));
+
+let pickNum = null;
+
+function filtered() {
+  const q = $('q').value.trim(), y = $('year').value;
+  let rows = DATA;
+  if (y) rows = rows.filter(d => d[1].startsWith(y));
+  if (pickNum) rows = rows.filter(d => d.slice(2, 8).includes(pickNum));
+  if (q) {
+    if (/^\d{4}-\d{1,2}/.test(q)) rows = rows.filter(d => d[1].startsWith(q));
+    else {
+      const nums = q.split(/[\s,]+/).filter(Boolean).map(Number).filter(n => !isNaN(n));
+      if (nums.length === 1 && nums[0] > 45) rows = rows.filter(d => d[0] === nums[0]);
+      else if (nums.length === 1) rows = rows.filter(d => d[0] === nums[0] || d.slice(2, 9).includes(nums[0]));
+      else if (nums.length) rows = rows.filter(d => nums.every(n => d.slice(2, 8).includes(n)));
+    }
+  }
+  return $('sort').value === 'desc' ? [...rows].reverse() : rows;
+}
+
+function hlSet() {
+  const s = new Set();
+  const q = $('q').value.trim();
+  if (q && !/^\d{4}-/.test(q)) q.split(/[\s,]+/).map(Number).filter(n => n >= 1 && n <= 45).forEach(n => s.add(n));
+  if (pickNum) s.add(pickNum);
+  return s;
+}
+
+function renderTable() {
+  const rows = filtered(), hl = hlSet();
+  $('count').textContent = `${rows.length.toLocaleString()}건` + (pickNum ? ` · ${pickNum}번 포함 회차` : '');
+  $('tbody').innerHTML = rows.map(d => `<tr>
+    <td><b>${d[0]}</b></td><td>${d[1]}</td>
+    <td><div class="balls">${d.slice(2, 8).map(n => ball(n, hl.has(n))).join('')}<span class="plus">+</span>${ball(d[8], hl.has(d[8]))}</div></td>
+    <td class="num">${d[9]}명</td><td class="num">${d[10] ? won(d[10]) : '-'}</td></tr>`).join('')
+    || `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:24px">검색 결과가 없습니다</td></tr>`;
+}
+
+function renderFreq() {
+  const y = $('year').value;
+  const rows = y ? DATA.filter(d => d[1].startsWith(y)) : DATA;
+  const cnt = Array(46).fill(0);
+  rows.forEach(d => d.slice(2, 8).forEach(n => cnt[n]++));
+  const max = Math.max(...cnt.slice(1));
+  const order = [...Array(45).keys()].map(i => i + 1).sort((a, b) => cnt[b] - cnt[a] || a - b);
+  const top = new Set(order.slice(0, 6));
+  $('freq').innerHTML = cnt.slice(1).map((c, i) => {
+    const n = i + 1;
+    return `<div class="col" data-n="${n}" title="${n}번: ${c}회">
+      <div class="bar${top.has(n) ? ' top' : ''}" style="height:${max ? c / max * 100 : 0}%;${pickNum === n ? 'outline:2px solid var(--text)' : ''}"></div>
+      <div class="lbl">${n}</div></div>`;
+  }).join('');
+  $('rank').innerHTML =
+    `<div><b>많이 나온 번호</b>${order.slice(0, 6).map(n => ball(n, false, true) + `<span class="count">${cnt[n]}</span>`).join(' ')}</div>` +
+    `<div><b>적게 나온 번호</b>${order.slice(-6).reverse().map(n => ball(n, false, true) + `<span class="count">${cnt[n]}</span>`).join(' ')}</div>`;
+  $('freqNote').textContent = `${y ? y + '년 · ' : ''}보너스 제외 · 막대를 누르면 그 번호가 나온 회차만 표에 보입니다`;
+  $('tip').textContent = pickNum ? `${pickNum}번: ${cnt[pickNum]}회 출현 · 다시 누르면 해제` : '';
+}
+
+$('freq').addEventListener('click', e => {
+  const col = e.target.closest('.col'); if (!col) return;
+  const n = +col.dataset.n; pickNum = pickNum === n ? null : n;
+  renderFreq(); renderTable();
+});
+$('q').addEventListener('input', renderTable);
+$('sort').addEventListener('change', renderTable);
+$('year').addEventListener('change', () => { renderFreq(); renderTable(); });
+
+renderFreq(); renderTable();
+</script>
+</body>
+</html>
