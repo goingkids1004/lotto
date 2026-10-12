@@ -72,6 +72,8 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .brand img { width: 56px; height: 56px; object-fit: contain; }
 .brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 @media (max-width: 600px) { .brand img { width: 44px; height: 44px; } .brand span { font-size: 18px; } }
+.more { display: block; width: 100%; margin-top: 10px; padding: 11px; font: inherit; font-weight: 700; color: var(--accent); background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; cursor: pointer; }
+.more[hidden] { display: none; }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
 @media (max-width: 600px) {
   .wrap { padding: 14px 12px 32px; }
@@ -87,7 +89,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .card .v { font-size: 15px; }
   .controls input { flex-basis: 100%; }
   .controls select { flex: 1; }
-  .tablewrap { max-height: 70vh; overflow-x: hidden; }
+  .tablewrap { max-height: none; overflow: visible; }
   .tablewrap table, .tablewrap tbody, .tablewrap tr, .tablewrap td { display: block; }
   .tablewrap thead { display: none; }
   .tablewrap tbody tr { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 10px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--line); }
@@ -133,6 +135,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
         <tbody id="tbody"></tbody>
       </table>
     </div>
+    <button class="more" id="more" hidden></button>
   </div>
 <p class="foot">여러분의 후원은 개발자에게 큰 도움이 됩니다. 후원계좌: 카카오뱅크 3333-01-4475921 (예금주: 최성욱)<br>데이터 출처: 동행복권 · 매주 토요일 추첨 후 자동 갱신</p>
 </div>
@@ -197,14 +200,23 @@ function hlSet() {
   return s;
 }
 
-function renderTable() {
-  const rows = filtered(), hl = hlSet();
-  $('count').textContent = `${rows.length.toLocaleString()}건` + (pickNum ? ` · ${pickNum}번 포함 회차` : '');
+// 휴대폰에서는 50회차씩 보여주고 [더 보기]로 이어서 표시 (PC는 전체)
+const PAGE = 50;
+let shown = PAGE;
+const paged = () => window.innerWidth > 0 && window.innerWidth <= 600;
+
+function renderTable(more) {
+  shown = more === true ? shown + PAGE : PAGE;
+  const all = filtered(), hl = hlSet(), rows = paged() ? all.slice(0, shown) : all;
+  $('count').textContent = `${all.length.toLocaleString()}건` + (pickNum ? ` · ${pickNum}번 포함 회차` : '');
   $('tbody').innerHTML = rows.map(d => `<tr>
     <td><b>${d[0]}</b></td><td>${d[1]}</td>
     <td><div class="balls">${d.slice(2, 8).map(n => ball(n, hl.has(n))).join('')}<span class="plus">+</span>${ball(d[8], hl.has(d[8]))}</div></td>
     <td class="num">${d[9]}명</td><td class="num">${d[10] ? won(d[10]) : '-'}</td></tr>`).join('')
     || `<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:24px">검색 결과가 없습니다</td></tr>`;
+  const left = all.length - rows.length;
+  $('more').hidden = left <= 0;
+  $('more').textContent = `더 보기 (${Math.min(PAGE, left)}개 더 · 남은 ${left.toLocaleString()}개)`;
 }
 
 function renderFreq() {
@@ -233,8 +245,9 @@ $('freq').addEventListener('click', e => {
   const n = +col.dataset.n; pickNum = pickNum === n ? null : n;
   renderFreq(); renderTable();
 });
-$('q').addEventListener('input', renderTable);
-$('sort').addEventListener('change', renderTable);
+$('q').addEventListener('input', () => renderTable());
+$('sort').addEventListener('change', () => renderTable());
+$('more').addEventListener('click', () => renderTable(true));
 $('year').addEventListener('change', () => { renderFreq(); renderTable(); });
 
 renderFreq(); renderTable();
