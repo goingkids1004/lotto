@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>로또 당첨번호 뷰어</title>
+<title>두꺼비가 알려주는 로또당첨번호</title>
+<link rel="icon" href="logo.png">
 <style>
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e5e7eb;
@@ -66,11 +67,17 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .topnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .topnav a { text-decoration: none; font-weight: 600; font-size: 13px; color: var(--muted); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
 .topnav a.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+.brand { margin: 0 0 12px; }
+.brand a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand img { width: 56px; height: 56px; object-fit: contain; }
+.brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+@media (max-width: 600px) { .brand img { width: 44px; height: 44px; } .brand span { font-size: 18px; } }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
   <nav class="topnav"><a href="./" class="on">당첨번호 조회</a><a href="predict.html">예상번호 생성</a></nav>
   <h1>로또 6/45 당첨번호</h1>
   <p class="sub" id="sub"></p>
