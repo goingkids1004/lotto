@@ -86,6 +86,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 360px) { .brand img { width: 36px; height: 36px; } }
 .more { display: block; width: 100%; margin-top: 10px; padding: 11px; font: inherit; font-weight: 700; color: var(--accent); background: var(--panel); border: 1px solid var(--accent); border-radius: 8px; cursor: pointer; }
 .more[hidden] { display: none; }
+.nw { white-space: nowrap; }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
 @media (max-width: 600px) {
   .wrap { padding: 14px 12px 32px; }
@@ -152,7 +153,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
     </div>
     <button class="more" id="more" hidden></button>
   </div>
-<p class="foot">여러분의 후원은 개발자에게 큰 도움이 됩니다. 후원계좌: 카카오뱅크 3333-01-4475921 (예금주: 최성욱)<br>데이터 출처: 동행복권 · 매주 토요일 추첨 후 자동 갱신</p>
+<p class="foot">여러분의 후원은 개발자에게 큰 도움이 됩니다.<br>후원계좌: 카카오뱅크 3333-01-4475921 <span class="nw">(예금주: 최성욱)</span><br>데이터 출처: 동행복권 · 매주 토요일 추첨 후 자동 갱신</p>
 </div>
 
 <script src="data/lotto.js"></script>
