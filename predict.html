@@ -15,6 +15,12 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#12aeba">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="두꺼비로또">
 <style>
 :root {
   --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e5e7eb;
@@ -99,6 +105,11 @@ progress { width: 160px; }
 .brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 @media (max-width: 600px) { .brand a { gap: 8px; } .brand img { width: 44px; height: 44px; } .brand span { font-size: clamp(15px, 4.7vw, 20px); white-space: nowrap; } }
 @media (max-width: 360px) { .brand img { width: 36px; height: 36px; } }
+.installbar { display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid #12aeba; border-radius: 8px; padding: 8px 10px; margin: -4px 0 14px; font-size: 13px; }
+.installbar[hidden], #installBtn[hidden] { display: none; }
+.installbar span { flex: 1; min-width: 0; line-height: 1.5; }
+#installBtn { font: inherit; font-weight: 700; color: #fff; background: #12aeba; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+#installClose { background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
 .nw { white-space: nowrap; }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
 @media (max-width: 600px) {
@@ -131,6 +142,7 @@ progress { width: 160px; }
 <div class="wrap">
   <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
   <nav class="topnav"><a href="predict.html" class="on">예상번호<span class="x"> 생성</span></a><a href="./">당첨번호<span class="x"> 조회</span></a><a href="saju.html">사주<span class="x"> 행운</span>번호</a></nav>
+  <div class="installbar" id="installBar" hidden><span id="installText">📲 <b>두꺼비로또</b>를 앱으로 설치하기</span><button id="installBtn">앱 설치</button><button id="installClose" aria-label="닫기">✕</button></div>
   <h1 id="title">로또 예상번호 생성기</h1>
   <p class="sub" id="sub"></p>
 
@@ -430,6 +442,32 @@ $('btRun').addEventListener('click', runBacktest);
 
 window.addEventListener('error', e => setMsg('genMsg', '문제가 생겼습니다: ' + e.message, 'err'));
 renderScore(); onGenerate();
+</script>
+<script>
+// 홈 화면 앱(PWA): 오프라인용 서비스 워커 등록 + 설치 안내 바
+(function () {
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  const bar = document.getElementById('installBar'); if (!bar) return;
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  let closed = 0; try { closed = +localStorage.getItem('installbar_closed') || 0; } catch (e) {}
+  if (standalone || Date.now() - closed < 7 * 864e5) return;
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const inApp = /KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\//i.test(ua);
+  const text = document.getElementById('installText'), btn = document.getElementById('installBtn');
+  let deferred = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; bar.hidden = false; });
+  if (inApp || ios) bar.hidden = false;
+  btn.addEventListener('click', async () => {
+    if (deferred) { deferred.prompt(); const r = await deferred.userChoice; deferred = null; if (r.outcome === 'accepted') bar.hidden = true; return; }
+    if (inApp) text.textContent = '카카오톡 같은 앱 안의 브라우저에서는 설치가 안 돼요. 메뉴(⋯)에서 "다른 브라우저로 열기"를 누른 뒤 다시 설치해 주세요.';
+    else if (ios) text.textContent = '사파리 아래쪽 공유 버튼(□↑)을 누르고 "홈 화면에 추가"를 선택하세요.';
+    else text.textContent = '브라우저 메뉴(⋮)에서 "앱 설치" 또는 "홈 화면에 추가"를 선택하세요.';
+    btn.hidden = true;
+  });
+  document.getElementById('installClose').addEventListener('click', () => { bar.hidden = true; try { localStorage.setItem('installbar_closed', String(Date.now())); } catch (e) {} });
+  window.addEventListener('appinstalled', () => { bar.hidden = true; });
+})();
 </script>
 </body>
 </html>
