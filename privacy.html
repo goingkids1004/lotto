@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 · 두꺼비가 알려주는 로또당첨번호</title>
+<link rel="icon" href="logo.png">
+<meta name="theme-color" content="#12aeba">
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e5e7eb;
+  --accent: #2f6fde; --warn: #e0533d; --ok: #22a35a; --bar: #22a35a; --bar-hi: #e0533d;
+  --b1: #f5b800; --b2: #3b82f6; --b3: #e5484d; --b4: #8b8f98; --b5: #22a35a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+    --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+  --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+h1 { font-size: 20px; margin: 0 0 2px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.note { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--warn);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+.note b { color: var(--text); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+.panel h2 { font-size: 15px; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.panel h2 small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; }
+.form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+input, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 7px 10px; width: 100%; min-width: 0; }
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 6px 14px; margin-top: 12px; font-size: 13px; }
+.checks label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.checks input { width: auto; }
+.hint { color: var(--muted); font-size: 12px; }
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+.actions select { width: auto; }
+.btn { font: inherit; font-weight: 700; color: #fff; background: var(--accent); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 8px 18px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn { white-space: nowrap; }
+.btn:disabled { opacity: .5; cursor: default; }
+.msg { font-size: 13px; }
+.msg.err { color: var(--warn); }
+.msg.ok { color: var(--ok); }
+.ball { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; text-shadow: 0 1px 1px rgba(0,0,0,.25); flex: none; }
+.ball.sm { width: 24px; height: 24px; font-size: 12px; }
+.c1 { background: var(--b1); } .c2 { background: var(--b2); } .c3 { background: var(--b3); }
+.c4 { background: var(--b4); } .c5 { background: var(--b5); }
+.ball.fix { outline: 3px solid var(--text); outline-offset: 1px; }
+.balls { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.sets { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+.set .no { font-weight: 700; width: 18px; color: var(--muted); }
+.set .tag { font-size: 12px; color: var(--muted); }
+.freq { display: grid; grid-template-columns: repeat(45, minmax(0, 1fr)); gap: 2px; align-items: end; height: 140px; }
+.freq .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.freq .bar { width: 100%; background: var(--bar); border-radius: 3px 3px 0 0; opacity: .85; min-height: 2px; }
+.freq .bar.top { background: var(--bar-hi); }
+.freq .lbl { font-size: 9px; color: var(--muted); margin-top: 3px; }
+.rank { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; }
+.rank div { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.rank b { color: var(--muted); font-weight: 600; margin-right: 4px; }
+.count { color: var(--muted); font-size: 12px; }
+.tablewrap { overflow-x: auto; }
+.bt { width: 100%; border-collapse: collapse; margin-top: 10px; white-space: nowrap; }
+.bt td, .bt th { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; }
+.bt td:first-child, .bt th:first-child { text-align: left; }
+.bt th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.verdict { margin: 10px 0 0; font-size: 13px; }
+progress { width: 160px; }
+@media (max-width: 600px) { .freq .lbl { display: none; } }
+.topnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.topnav a { text-decoration: none; font-weight: 600; font-size: 13px; color: var(--muted); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+.topnav a.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+.brand { margin: 0 0 12px; }
+.brand a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand img { width: 56px; height: 56px; object-fit: contain; }
+.brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+@media (max-width: 600px) { .brand a { gap: 8px; } .brand img { width: 44px; height: 44px; } .brand span { font-size: clamp(15px, 4.7vw, 20px); white-space: nowrap; } }
+@media (max-width: 360px) { .brand img { width: 36px; height: 36px; } }
+.installbar { display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid #12aeba; border-radius: 8px; padding: 8px 10px; margin: -4px 0 14px; font-size: 13px; }
+.installbar[hidden], #installBtn[hidden] { display: none; }
+.installbar span { flex: 1; min-width: 0; line-height: 1.5; }
+#installBtn { font: inherit; font-weight: 700; color: #fff; background: #12aeba; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+#installClose { background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+.nw { white-space: nowrap; }
+.foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
+@media (max-width: 600px) {
+  .wrap { padding: 14px 12px 32px; }
+  h1 { font-size: 18px; }
+  .sub { font-size: 12.5px; margin-bottom: 12px; }
+  .panel { padding: 12px; }
+  .topnav { gap: 8px; }
+  .topnav a { flex: 1 1 0; min-width: 0; text-align: center; padding: 9px 4px; font-size: clamp(12px, 3.6vw, 14px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 400px) {
+  .topnav .x { display: none; }
+  .foot { line-height: 1.7; }
+}
+@media (max-width: 600px) {
+  .form { grid-template-columns: 1fr 1fr; }
+  .form label:first-child { grid-column: 1 / -1; }
+  .checks { grid-template-columns: 1fr; }
+  .set { gap: 8px; padding: 10px; }
+  .set .tag { width: 100%; padding-left: 26px; }
+  .sets .ball { width: 34px; height: 34px; font-size: 14px; }
+  .actions .btn { flex: 1; padding: 11px 12px; }
+  .actions .msg { width: 100%; }
+  .note { font-size: 12.5px; padding: 10px 12px; }
+  .bt th:nth-child(5), .bt td:nth-child(5) { display: none; }
+  .bt td, .bt th { padding: 6px; font-size: 12.5px; }
+}
+.policy h2 { font-size: 16px; margin: 22px 0 8px; }
+.policy p, .policy li { font-size: 14px; line-height: 1.75; }
+.policy ul { padding-left: 20px; margin: 6px 0; }
+.policy table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+.policy th, .policy td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+.policy th { background: var(--bg); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
+  <nav class="topnav"><a href="predict.html">예상번호<span class="x"> 생성</span></a><a href="./">당첨번호<span class="x"> 조회</span></a><a href="saju.html">사주<span class="x"> 행운</span>번호</a></nav>
+
+  <div class="panel policy">
+    <h1>개인정보처리방침</h1>
+    <p class="sub">시행일: 2026년 10월 13일</p>
+
+    <p>"두꺼비가 알려주는 로또당첨번호"(웹사이트 brightbom.kr 및 안드로이드 앱 "두꺼비로또", 이하 "서비스")는
+      이용자의 개인정보를 소중히 여기며, 「개인정보 보호법」 등 관련 법령을 지킵니다.</p>
+
+    <h2>1. 수집하는 개인정보</h2>
+    <p><b>서비스는 이용자의 개인정보를 수집하거나 서버에 저장하지 않습니다.</b> 회원가입, 로그인, 결제 기능이 없습니다.</p>
+
+    <h2>2. 기기 안에서만 처리되는 정보</h2>
+    <table>
+      <tr><th>항목</th><th>이용 목적</th><th>보관 위치·기간</th></tr>
+      <tr><td>생년월일, 태어난 시간 (사주 행운번호 페이지에서 직접 입력한 경우)</td><td>사주팔자 계산과 행운번호 생성</td><td>이용자 기기의 브라우저 저장소에만 보관되며 외부로 전송되지 않습니다. 브라우저 데이터 삭제 또는 앱 삭제 시 함께 삭제됩니다.</td></tr>
+      <tr><td>앱 설치 안내 닫기 기록</td><td>설치 안내를 반복해서 보여주지 않기 위함</td><td>이용자 기기에만 보관</td></tr>
+      <tr><td>오프라인용 화면·데이터 사본</td><td>인터넷 연결이 없을 때도 화면을 보여주기 위함</td><td>이용자 기기에만 보관</td></tr>
+    </table>
+
+    <h2>3. 제3자 제공 및 처리 위탁</h2>
+    <p>서비스는 개인정보를 제3자에게 제공하지 않습니다. 광고, 분석 도구(통계 수집), 추적 쿠키를 사용하지 않습니다.</p>
+    <p>웹사이트는 GitHub Pages(GitHub, Inc.)를 통해 제공되며, 서비스 제공 과정에서 GitHub가 접속 기록(IP 주소 등)을
+      보안 목적으로 처리할 수 있습니다. 자세한 내용은 <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">GitHub 개인정보처리방침</a>을 참고해 주세요.</p>
+
+    <h2>4. 당첨번호 데이터</h2>
+    <p>로또 당첨번호는 동행복권이 공개한 정보를 매주 자동으로 받아 표시합니다. 서비스는 동행복권과 관계가 없는 개인이 만든 비공식 서비스이며,
+      복권 구매·결제 기능이나 구매 페이지 연결을 제공하지 않습니다.</p>
+
+    <h2>5. 아동의 개인정보</h2>
+    <p>서비스는 만 19세 미만을 대상으로 하지 않으며, 아동의 개인정보를 수집하지 않습니다.</p>
+
+    <h2>6. 이용자의 권리</h2>
+    <p>서비스는 개인정보를 보관하지 않으므로 열람·삭제 요청 대상 정보가 없습니다. 기기에 저장된 정보는 브라우저의 사이트 데이터 삭제 또는 앱 삭제로 언제든지 지울 수 있습니다.</p>
+
+    <h2>7. 문의처</h2>
+    <p>개인정보 관련 문의: <a href="mailto:iamnovix@naver.com">iamnovix@naver.com</a></p>
+
+    <h2>8. 방침의 변경</h2>
+    <p>이 방침이 바뀌는 경우 이 페이지를 통해 시행일과 함께 알립니다.</p>
+  </div>
+
+<p class="foot">데이터 출처: 동행복권 · 동행복권과 관계없는 개인이 만든 비공식 서비스입니다</p>
+</div>
+</body>
+</html>
