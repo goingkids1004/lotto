@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "kr.brightbom.lotto",
+        "sha256_cert_fingerprints": ["EF:35:02:EF:6B:44:57:C3:DA:B4:D3:B9:95:F9:AC:DD:69:55:55:66:0E:F4:BC:6F:EB:25:28:0D:5F:3B:2D:32"]
+      }
+    }]
