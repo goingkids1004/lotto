@@ -1,23 +1,75 @@
 {
-  "name": "두꺼비가 알려주는 로또당첨번호",
-  "short_name": "두꺼비로또",
-  "description": "로또 6/45 역대 당첨번호 조회, 다음 회차 예상번호, 사주 행운번호",
-  "lang": "ko",
-  "id": "./",
-  "start_url": "./predict.html?source=app",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f6f7f9",
-  "theme_color": "#12aeba",
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ],
-  "shortcuts": [
-    { "name": "예상번호 생성", "url": "./predict.html?source=app", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
-    { "name": "당첨번호 조회", "url": "./?source=app", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
-    { "name": "사주 행운번호", "url": "./saju.html?source=app", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
-  ]
+    "name":  "두꺼비가 알려주는 로또당첨번호",
+    "short_name":  "두꺼비로또",
+    "description":  "로또 6/45 역대 당첨번호 조회, 다음 회차 예상번호, 사주 행운번호",
+    "lang":  "ko",
+    "id":  "./",
+    "start_url":  "./predict.html?source=app",
+    "scope":  "./",
+    "display":  "standalone",
+    "orientation":  "portrait",
+    "background_color":  "#f6f7f9",
+    "theme_color":  "#12aeba",
+    "icons":  [
+                  {
+                      "src":  "icon-192.png",
+                      "sizes":  "192x192",
+                      "type":  "image/png",
+                      "purpose":  "any"
+                  },
+                  {
+                      "src":  "icon-512.png",
+                      "sizes":  "512x512",
+                      "type":  "image/png",
+                      "purpose":  "any"
+                  },
+                  {
+                      "src":  "icon-maskable-512.png",
+                      "sizes":  "512x512",
+                      "type":  "image/png",
+                      "purpose":  "maskable"
+                  }
+              ],
+    "shortcuts":  [
+                      {
+                          "name":  "예상번호 생성",
+                          "url":  "./predict.html?source=app",
+                          "icons":  [
+                                        {
+                                            "src":  "icon-192.png",
+                                            "sizes":  "192x192"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "당첨번호 조회",
+                          "url":  "./?source=app",
+                          "icons":  [
+                                        {
+                                            "src":  "icon-192.png",
+                                            "sizes":  "192x192"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "사주 행운번호",
+                          "url":  "./saju.html?source=app",
+                          "icons":  [
+                                        {
+                                            "src":  "icon-192.png",
+                                            "sizes":  "192x192"
+                                        }
+                                    ]
+                      },
+                      {
+                          "name":  "QR 당첨확인",
+                          "url":  "./check.html?source=app",
+                          "icons":  [
+                                        {
+                                            "src":  "icon-192.png",
+                                            "sizes":  "192x192"
+                                        }
+                                    ]
+                      }
+                  ]
 }

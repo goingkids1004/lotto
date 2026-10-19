@@ -1,10 +1,10 @@
 // 두꺼비 로또 앱 서비스 워커
 // 항상 인터넷에서 최신 파일을 먼저 받고, 연결이 안 될 때만 저장해 둔 파일을 보여준다.
 // (매주 갱신되는 당첨번호가 옛날 것으로 남지 않도록 network-first)
-const CACHE = 'lotto-v1';
+const CACHE = 'lotto-v2';
 const CORE = [
-  './', './index.html', './predict.html', './saju.html',
-  './data/lotto.js', './logo.png', './icon-192.png', './manifest.webmanifest',
+  './', './index.html', './predict.html', './saju.html', './check.html', './vendor/jsQR.js',
+  './data/lotto.js', './data/stores.js', './logo.png', './icon-192.png', './manifest.webmanifest',
 ];
 
 self.addEventListener('install', e => {

@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QR 당첨확인 · 두꺼비가 알려주는 로또당첨번호</title>
+<link rel="icon" href="logo.png">
+<meta name="description" content="로또 용지의 QR코드를 휴대폰 카메라로 찍어 바로 당첨 결과를 확인하세요">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="두꺼비가 알려주는 로또당첨번호">
+<meta property="og:title" content="QR 당첨확인 · 두꺼비가 알려주는 로또당첨번호">
+<meta property="og:description" content="로또 용지의 QR코드를 휴대폰 카메라로 찍어 바로 당첨 결과를 확인하세요">
+<meta property="og:url" content="https://brightbom.kr/check.html">
+<meta property="og:image" content="https://brightbom.kr/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#12aeba">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="두꺼비로또">
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --text: #1d2330; --muted: #6b7280; --line: #e5e7eb;
+  --accent: #2f6fde; --warn: #e0533d; --ok: #22a35a; --bar: #22a35a; --bar-hi: #e0533d;
+  --b1: #f5b800; --b2: #3b82f6; --b3: #e5484d; --b4: #8b8f98; --b5: #22a35a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+    --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --panel: #1b1f27; --text: #e6e8ec; --muted: #9aa1ad; --line: #2b313c;
+  --accent: #6ea0ff; --warn: #ff7a66; --bar: #3fc47a; --bar-hi: #ff7a66;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 14px/1.5 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 20px 16px 40px; }
+h1 { font-size: 20px; margin: 0 0 2px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.note { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--warn);
+  border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: var(--muted); }
+.note b { color: var(--text); }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+.panel h2 { font-size: 15px; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.panel h2 small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px 14px; }
+.form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+input, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 7px 10px; width: 100%; min-width: 0; }
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 6px 14px; margin-top: 12px; font-size: 13px; }
+.checks label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.checks input { width: auto; }
+.hint { color: var(--muted); font-size: 12px; }
+.actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+.actions select { width: auto; }
+.btn { font: inherit; font-weight: 700; color: #fff; background: var(--accent); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 8px 18px; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn { white-space: nowrap; }
+.btn:disabled { opacity: .5; cursor: default; }
+.msg { font-size: 13px; }
+.msg.err { color: var(--warn); }
+.msg.ok { color: var(--ok); }
+.ball { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; text-shadow: 0 1px 1px rgba(0,0,0,.25); flex: none; }
+.ball.sm { width: 24px; height: 24px; font-size: 12px; }
+.c1 { background: var(--b1); } .c2 { background: var(--b2); } .c3 { background: var(--b3); }
+.c4 { background: var(--b4); } .c5 { background: var(--b5); }
+.ball.fix { outline: 3px solid var(--text); outline-offset: 1px; }
+.balls { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.sets { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.set { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+.set .no { font-weight: 700; width: 18px; color: var(--muted); }
+.set .tag { font-size: 12px; color: var(--muted); }
+.freq { display: grid; grid-template-columns: repeat(45, minmax(0, 1fr)); gap: 2px; align-items: end; height: 140px; }
+.freq .col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 0; }
+.freq .bar { width: 100%; background: var(--bar); border-radius: 3px 3px 0 0; opacity: .85; min-height: 2px; }
+.freq .bar.top { background: var(--bar-hi); }
+.freq .lbl { font-size: 9px; color: var(--muted); margin-top: 3px; }
+.rank { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 13px; }
+.rank div { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.rank b { color: var(--muted); font-weight: 600; margin-right: 4px; }
+.count { color: var(--muted); font-size: 12px; }
+.tablewrap { overflow-x: auto; }
+.bt { width: 100%; border-collapse: collapse; margin-top: 10px; white-space: nowrap; }
+.bt td, .bt th { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: right; }
+.bt td:first-child, .bt th:first-child { text-align: left; }
+.bt th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.verdict { margin: 10px 0 0; font-size: 13px; }
+progress { width: 160px; }
+@media (max-width: 600px) { .freq .lbl { display: none; } }
+.topnav { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.topnav a { text-decoration: none; font-weight: 600; font-size: 13px; color: var(--muted); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); }
+.topnav a.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+.brand { margin: 0 0 12px; }
+.brand a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.brand img { width: 56px; height: 56px; object-fit: contain; }
+.brand span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+@media (max-width: 600px) { .brand a { gap: 8px; } .brand img { width: 44px; height: 44px; } .brand span { font-size: clamp(15px, 4.7vw, 20px); white-space: nowrap; } }
+@media (max-width: 360px) { .brand img { width: 36px; height: 36px; } }
+.installbar { display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid #12aeba; border-radius: 8px; padding: 8px 10px; margin: -4px 0 14px; font-size: 13px; }
+.installbar[hidden], #installBtn[hidden] { display: none; }
+.installbar span { flex: 1; min-width: 0; line-height: 1.5; }
+#installBtn { font: inherit; font-weight: 700; color: #fff; background: #12aeba; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
+#installClose { background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+.nw { white-space: nowrap; }
+.foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
+@media (max-width: 600px) {
+  .wrap { padding: 14px 12px 32px; }
+  h1 { font-size: 18px; }
+  .sub { font-size: 12.5px; margin-bottom: 12px; }
+  .panel { padding: 12px; }
+  .topnav { gap: 8px; }
+  .topnav a { flex: 1 1 0; min-width: 0; text-align: center; padding: 9px 4px; font-size: clamp(12px, 3.6vw, 14px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 400px) {
+  .topnav .x { display: none; }
+  .foot { line-height: 1.7; }
+}
+@media (max-width: 600px) {
+  .form { grid-template-columns: 1fr 1fr; }
+  .form label:first-child { grid-column: 1 / -1; }
+  .checks { grid-template-columns: 1fr; }
+  .set { gap: 8px; padding: 10px; }
+  .set .tag { width: 100%; padding-left: 26px; }
+  .sets .ball { width: 34px; height: 34px; font-size: 14px; }
+  .actions .btn { flex: 1; padding: 11px 12px; }
+  .actions .msg { width: 100%; }
+  .note { font-size: 12.5px; padding: 10px 12px; }
+  .bt th:nth-child(5), .bt td:nth-child(5) { display: none; }
+  .bt td, .bt th { padding: 6px; font-size: 12.5px; }
+}
+.scanbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.scanbtns .btn { padding: 14px 10px; font-size: 15px; }
+.camwrap { position: relative; margin-top: 12px; border-radius: 12px; overflow: hidden; background: #000; aspect-ratio: 3 / 4; max-height: 60vh; }
+.camwrap[hidden] { display: none; }
+.camwrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.camwrap .frame { position: absolute; inset: 18% 14%; border: 3px solid rgba(255,255,255,.9); border-radius: 14px; box-shadow: 0 0 0 9999px rgba(0,0,0,.35); pointer-events: none; }
+.camwrap .hint { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; color: #fff; font-size: 13px; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.camwrap .stop { position: absolute; top: 10px; right: 10px; font: inherit; font-weight: 700; color: #fff; background: rgba(0,0,0,.55); border: 0; border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.draw { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 4px 0 2px; }
+.games { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.game { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; grid-template-columns: 26px 1fr auto; gap: 6px 10px; align-items: center; }
+.game .no { font-weight: 800; color: var(--muted); }
+.game .mode { font-size: 11px; color: var(--muted); }
+.game .res { font-weight: 800; text-align: right; white-space: nowrap; font-size: 14px; }
+.game .res small { display: block; font-weight: 600; font-size: 12px; color: var(--muted); }
+.game.win { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 7%, var(--panel)); }
+.game.win .res { color: var(--warn); }
+.ball.miss { opacity: .28; filter: grayscale(1); }
+.ball.hit { box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--text); }
+.summary { margin-top: 12px; padding: 12px; border-radius: 10px; background: var(--bg); text-align: center; font-size: 15px; }
+.summary b { font-size: 18px; }
+.summary.win { background: color-mix(in srgb, var(--warn) 12%, var(--panel)); color: var(--warn); }
+.manual textarea { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; min-height: 92px; resize: vertical; }
+.manual .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: end; margin-bottom: 8px; }
+.manual .row label { flex: 1 1 160px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.small { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.6; }
+@media (max-width: 600px) {
+  .game { grid-template-columns: 22px 1fr; }
+  .game .res { grid-column: 1 / -1; text-align: left; display: flex; gap: 8px; align-items: baseline; }
+  .game .res small { display: inline; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
+  <nav class="topnav"><a href="predict.html">예상번호<span class="x"> 생성</span></a><a href="./">당첨번호<span class="x"> 조회</span></a><a href="saju.html">사주<span class="x"> 행운</span>번호</a><a href="check.html" class="on">QR<span class="x"> 당첨</span>확인</a></nav>
+  <div class="installbar" id="installBar" hidden><span id="installText">📲 <b>두꺼비로또</b>를 앱으로 설치하기</span><button id="installBtn">앱 설치</button><button id="installClose" aria-label="닫기">✕</button></div>
+
+  <h1>로또 QR 당첨확인</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="panel">
+    <h2>QR코드 스캔 <small>용지 오른쪽 아래의 QR코드</small></h2>
+    <div class="scanbtns">
+      <button class="btn" id="camBtn">📷 카메라로 스캔</button>
+      <button class="btn ghost" id="photoBtn">🖼️ 사진에서 읽기</button>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" hidden>
+    <div class="camwrap" id="camWrap" hidden>
+      <video id="video" playsinline muted></video>
+      <div class="frame"></div>
+      <div class="hint">QR코드를 네모 안에 맞춰 주세요</div>
+      <button class="stop" id="stopBtn">✕ 닫기</button>
+    </div>
+    <p class="msg" id="scanMsg"></p>
+    <p class="small">카메라 화면과 사진은 이 휴대폰 안에서만 읽고, 어디에도 저장하거나 전송하지 않습니다.</p>
+  </div>
+
+  <div class="panel" id="resultPanel" hidden>
+    <h2 id="resTitle">확인 결과</h2>
+    <div id="resDraw"></div>
+    <div class="games" id="resGames"></div>
+    <div class="summary" id="resSum"></div>
+    <p class="small">※ 참고용 결과입니다. QR코드는 복권의 진위를 확인해 주지 않으며, 실제 당첨 여부와 지급은 판매점 또는 동행복권에서 확인하세요.</p>
+  </div>
+
+  <div class="panel manual">
+    <h2>번호 직접 입력 <small>QR이 안 읽힐 때</small></h2>
+    <div class="row">
+      <label>회차<select id="mRound"></select></label>
+    </div>
+    <textarea id="mNums" placeholder="한 줄에 한 게임씩 번호 6개 (최대 5줄)&#10;예) 3 11 17 25 33 41&#10;    1 5 12 20 33 44"></textarea>
+    <div class="actions">
+      <button class="btn" id="mBtn">당첨 확인</button>
+      <span class="msg" id="mMsg"></span>
+    </div>
+  </div>
+
+<p class="foot">여러분의 후원은 개발자에게 큰 도움이 됩니다.<br>후원계좌: 카카오뱅크 3333-01-4475921 <span class="nw">(예금주: 최성욱)</span><br>데이터 출처: 동행복권 · 매주 토요일 추첨 후 자동 갱신 · <a href="privacy.html" style="color:inherit">개인정보처리방침</a></p>
+</div>
+
+<script src="data/lotto.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script>
+const DATA = window.LOTTO_DATA || [];
+const $ = id => document.getElementById(id);
+const colorOf = n => n <= 10 ? 'c1' : n <= 20 ? 'c2' : n <= 30 ? 'c3' : n <= 40 ? 'c4' : 'c5';
+const ball = (n, cls) => `<span class="ball ${colorOf(n)}${cls ? ' ' + cls : ''}">${n}</span>`;
+const won = v => v.toLocaleString('ko-KR') + '원';
+const buzz = p => { try { if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) navigator.vibrate(p); } catch (e) {} };
+const setMsg = (id, text, kind) => { $(id).textContent = text || ''; $(id).className = 'msg' + (kind ? ' ' + kind : ''); };
+const byRound = new Map(DATA.map(d => [d[0], d]));
+const last = DATA[DATA.length - 1];
+const LETTERS = 'ABCDE';
+const MODE = { q: '자동', m: '수동', s: '반자동' };
+
+function drawDateOf(round) { // 마지막 회차 기준 매주 토요일
+  const [y, m, d] = last[1].split('-').map(Number);
+  const t = new Date(y, m - 1, d + 7 * (round - last[0]));
+  return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+}
+$('sub').textContent = last ? `${last[0]}회 (${last[1]})까지 당첨번호로 확인합니다 · 다음 추첨 ${last[0] + 1}회 (${drawDateOf(last[0] + 1)})` : '';
+
+// ───────── QR 내용 해석 ─────────
+// 예) https://m.dhlottery.co.kr/qr.do?method=winQr&v=1246q071315222838m010203040506...
+function parseQR(text) {
+  const s = String(text || '').trim();
+  let v = (s.match(/[?&]v=([^&#\s]+)/) || [])[1];
+  if (!v && /^\d{4}[a-z]\d{12}/i.test(s)) v = s;
+  if (!v) return { error: '로또 6/45 QR코드가 아닌 것 같아요. 용지 오른쪽 아래의 QR코드를 찍어 주세요.' };
+  try { v = decodeURIComponent(v); } catch (e) {}
+  v = v.replace(/\s+/g, '');
+  const round = parseInt(v.slice(0, 4), 10);
+  const games = [];
+  const re = /([a-z])(\d{12})/gi; let m;
+  const rest = v.slice(4);
+  while ((m = re.exec(rest)) && games.length < 5) {
+    const mode = m[1].toLowerCase();
+    if (mode === 'n') continue;
+    const nums = m[2].match(/\d\d/g).map(Number);
+    if (nums.every(n => n >= 1 && n <= 45) && new Set(nums).size === 6) games.push({ mode, nums: nums.sort((a, b) => a - b) });
+  }
+  if (!round || !games.length) return { error: 'QR코드는 읽었지만 로또 번호를 찾지 못했어요. 다시 찍어 보거나 번호를 직접 입력해 주세요.' };
+  return { round, games };
+}
+
+// ───────── 당첨 판정 ─────────
+function rankOf(nums, d) {
+  const win = d.slice(2, 8), bonus = d[8];
+  const hit = nums.filter(n => win.includes(n)).length, b = nums.includes(bonus);
+  const rank = hit === 6 ? 1 : (hit === 5 && b) ? 2 : hit === 5 ? 3 : hit === 4 ? 4 : hit === 3 ? 5 : 0;
+  return { rank, hit, bonusHit: b, prize: rank ? (d[9 + rank] || 0) : 0 };
+}
+
+function showResult(round, games, sourceLabel) {
+  $('resultPanel').hidden = false;
+  $('resTitle').textContent = `${round}회 확인 결과` + (sourceLabel ? ` · ${sourceLabel}` : '');
+  const d = byRound.get(round);
+  if (!d) {
+    const future = last && round > last[0];
+    $('resDraw').innerHTML = `<p class="small" style="font-size:14px">${future
+      ? `아직 추첨 전입니다. ${round}회는 <b>${drawDateOf(round)} (토) 저녁</b>에 추첨해요. 추첨이 끝나고 나서 다시 확인해 주세요.`
+      : `${round}회 당첨번호를 찾을 수 없어요.`}</p>`;
+    $('resGames').innerHTML = games.map((g, i) => `<div class="game"><span class="no">${LETTERS[i]}</span>
+      <div><div class="balls">${g.nums.map(n => ball(n)).join('')}</div>${MODE[g.mode] ? `<div class="mode">${MODE[g.mode]}</div>` : ''}</div>
+      <div class="res"><small>추첨 전</small></div></div>`).join('');
+    $('resSum').className = 'summary'; $('resSum').innerHTML = future ? '추첨 후에 결과가 나와요 🍀' : '';
+    $('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  const win = d.slice(2, 8);
+  $('resDraw').innerHTML = `<div class="small" style="margin:0">당첨번호 (${d[1]})</div>
+    <div class="draw">${win.map(n => ball(n)).join('')}<span class="plus">+</span>${ball(d[8])}</div>`;
+  let total = 0, best = 0;
+  $('resGames').innerHTML = games.map((g, i) => {
+    const r = rankOf(g.nums, d); total += r.prize; if (r.rank && (!best || r.rank < best)) best = r.rank;
+    const cells = g.nums.map(n => ball(n, win.includes(n) ? 'hit' : (n === d[8] && r.rank === 2) ? 'hit' : 'miss')).join('');
+    const res = r.rank ? `${r.rank}등 당첨!<small>${r.prize ? won(r.prize) : ''}</small>` : `낙첨<small>${r.hit}개 일치</small>`;
+    return `<div class="game${r.rank ? ' win' : ''}"><span class="no">${LETTERS[i]}</span>
+      <div><div class="balls">${cells}</div>${MODE[g.mode] ? `<div class="mode">${MODE[g.mode]}</div>` : ''}</div>
+      <div class="res">${res}</div></div>`;
+  }).join('');
+  if (best) {
+    $('resSum').className = 'summary win';
+    $('resSum').innerHTML = `🎉 축하합니다! 최고 <b>${best}등</b> 당첨 · 예상 당첨금 합계 <b>${won(total)}</b>`;
+    buzz([80, 60, 80]);
+  } else {
+    $('resSum').className = 'summary';
+    $('resSum').innerHTML = '아쉽지만 이번엔 낙첨이에요. 다음 회차를 응원합니다 🐸';
+  }
+  $('resultPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function handleQRText(text, label) {
+  const p = parseQR(text);
+  if (p.error) { setMsg('scanMsg', p.error, 'err'); return false; }
+  setMsg('scanMsg', `QR코드를 읽었어요 (${p.round}회, ${p.games.length}게임)`, 'ok');
+  showResult(p.round, p.games, label);
+  return true;
+}
+
+// ───────── 카메라 스캔 ─────────
+let stream = null, scanTimer = null;
+const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+function decodeFrom(source, w, h, maxSide, both) {
+  const k = Math.min(1, maxSide / Math.max(w, h));
+  canvas.width = Math.round(w * k); canvas.height = Math.round(h * k);
+  ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+  const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const code = window.jsQR ? jsQR(img.data, img.width, img.height, { inversionAttempts: both ? 'attemptBoth' : 'dontInvert' }) : null;
+  return code && code.data;
+}
+
+async function startCamera() {
+  if (!window.jsQR) { setMsg('scanMsg', 'QR 읽기 기능을 불러오지 못했어요. 새로고침해 주세요.', 'err'); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { setMsg('scanMsg', '이 브라우저는 카메라를 지원하지 않아요. [사진에서 읽기]를 이용해 주세요.', 'err'); return; }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false });
+  } catch (e) {
+    setMsg('scanMsg', e.name === 'NotAllowedError'
+      ? '카메라 사용이 허용되지 않았어요. 브라우저 설정에서 카메라를 허용하거나 [사진에서 읽기]를 이용해 주세요.'
+      : '카메라를 켤 수 없어요. [사진에서 읽기]를 이용해 주세요.', 'err');
+    return;
+  }
+  const video = $('video'); video.srcObject = stream; $('camWrap').hidden = false;
+  try { await video.play(); } catch (e) {}
+  setMsg('scanMsg', 'QR코드를 찾는 중...', '');
+  $('camWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  scanTimer = setInterval(() => {
+    if (!video.videoWidth) return;
+    const text = decodeFrom(video, video.videoWidth, video.videoHeight, 720, false);
+    if (text) { stopCamera(); buzz(60); handleQRText(text, '카메라'); }
+  }, 250);
+}
+function stopCamera() {
+  clearInterval(scanTimer); scanTimer = null;
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  $('video').srcObject = null; $('camWrap').hidden = true;
+}
+$('camBtn').addEventListener('click', () => { if (stream) stopCamera(); else startCamera(); });
+$('stopBtn').addEventListener('click', () => { stopCamera(); setMsg('scanMsg', ''); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && stream) stopCamera(); });
+
+// ───────── 사진에서 읽기 ─────────
+$('photoBtn').addEventListener('click', () => $('photoInput').click());
+$('photoInput').addEventListener('change', () => {
+  const f = $('photoInput').files[0]; $('photoInput').value = '';
+  if (!f) return;
+  if (!window.jsQR) { setMsg('scanMsg', 'QR 읽기 기능을 불러오지 못했어요. 새로고침해 주세요.', 'err'); return; }
+  setMsg('scanMsg', '사진에서 QR코드를 찾는 중...', '');
+  const url = URL.createObjectURL(f), img = new Image();
+  img.onload = () => {
+    let text = null;
+    for (const side of [1600, 1000, 2400]) { text = decodeFrom(img, img.naturalWidth, img.naturalHeight, side, true); if (text) break; }
+    URL.revokeObjectURL(url);
+    if (text) handleQRText(text, '사진');
+    else setMsg('scanMsg', '사진에서 QR코드를 찾지 못했어요. QR코드가 크고 선명하게 나오도록 다시 찍어 주세요.', 'err');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); setMsg('scanMsg', '사진을 열 수 없어요.', 'err'); };
+  img.src = url;
+});
+
+// ───────── 직접 입력 ─────────
+if (last) for (let r = last[0] + 1; r >= 1; r--) $('mRound').insertAdjacentHTML('beforeend', `<option value="${r}">${r}회${r === last[0] + 1 ? ' (추첨 전)' : ''}</option>`);
+if (last) $('mRound').value = String(last[0]);
+$('mBtn').addEventListener('click', () => {
+  const lines = $('mNums').value.split(/\n/).map(s => s.trim()).filter(Boolean);
+  if (!lines.length) { setMsg('mMsg', '번호를 입력해 주세요', 'err'); return; }
+  if (lines.length > 5) { setMsg('mMsg', '한 번에 5게임까지 확인할 수 있어요', 'err'); return; }
+  const games = [];
+  for (let i = 0; i < lines.length; i++) {
+    const nums = (lines[i].match(/\d+/g) || []).map(Number);
+    if (nums.length !== 6 || nums.some(n => n < 1 || n > 45) || new Set(nums).size !== 6) { setMsg('mMsg', `${i + 1}번째 줄: 1~45 사이 서로 다른 숫자 6개를 넣어 주세요`, 'err'); return; }
+    games.push({ mode: '', nums: nums.sort((a, b) => a - b) });
+  }
+  setMsg('mMsg', '');
+  showResult(+$('mRound').value, games, '직접 입력');
+});
+
+// 다른 앱에서 QR 주소로 열렸을 때 (예: check.html?v=1246q...)
+if (/[?&]v=/.test(location.search)) handleQRText(location.href, 'QR 링크');
+</script>
+<script>
+// 홈 화면 앱(PWA): 오프라인용 서비스 워커 등록 + 설치 안내 바
+(function () {
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  const bar = document.getElementById('installBar'); if (!bar) return;
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  let closed = 0; try { closed = +localStorage.getItem('installbar_closed') || 0; } catch (e) {}
+  if (standalone || Date.now() - closed < 7 * 864e5) return;
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const inApp = /KAKAOTALK|NAVER\(|Instagram|FBAN|FBAV|Line\//i.test(ua);
+  const text = document.getElementById('installText'), btn = document.getElementById('installBtn');
+  let deferred = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; bar.hidden = false; });
+  if (inApp || ios) bar.hidden = false;
+  btn.addEventListener('click', async () => {
+    if (deferred) { deferred.prompt(); const r = await deferred.userChoice; deferred = null; if (r.outcome === 'accepted') bar.hidden = true; return; }
+    if (inApp) text.textContent = '카카오톡 같은 앱 안의 브라우저에서는 설치가 안 돼요. 메뉴(⋯)에서 "다른 브라우저로 열기"를 누른 뒤 다시 설치해 주세요.';
+    else if (ios) text.textContent = '사파리 아래쪽 공유 버튼(□↑)을 누르고 "홈 화면에 추가"를 선택하세요.';
+    else text.textContent = '브라우저 메뉴(⋮)에서 "앱 설치" 또는 "홈 화면에 추가"를 선택하세요.';
+    btn.hidden = true;
+  });
+  document.getElementById('installClose').addEventListener('click', () => { bar.hidden = true; try { localStorage.setItem('installbar_closed', String(Date.now())); } catch (e) {} });
+  window.addEventListener('appinstalled', () => { bar.hidden = true; });
+})();
+</script>
+</body>
+</html>
