@@ -10,11 +10,11 @@ $csvPath = Join-Path $root 'data/lotto.csv'
 $jsPath  = Join-Path $root 'data/lotto.js'
 $utf8Bom = New-Object System.Text.UTF8Encoding $true
 $utf8    = New-Object System.Text.UTF8Encoding $false
-$cols    = '회차','추첨일','번호1','번호2','번호3','번호4','번호5','번호6','보너스','1등당첨자수','1등당첨금'
+$cols    = '회차','추첨일','번호1','번호2','번호3','번호4','번호5','번호6','보너스','1등당첨자수','1등당첨금','2등당첨금','3등당첨금','4등당첨금','5등당첨금'
 
 $rows = @{}
 foreach ($r in (Import-Csv $csvPath -Encoding UTF8)) {
-    $rows[[int]$r.'회차'] = @([int]$r.'회차', $r.'추첨일') + @($cols[2..10] | ForEach-Object { [long]$r.$_ })
+    $rows[[int]$r.'회차'] = @([int]$r.'회차', $r.'추첨일') + @($cols[2..14] | ForEach-Object { [long]$r.$_ })
 }
 $before = ($rows.Keys | Measure-Object -Maximum).Maximum
 Write-Host "현재 마지막 회차: $before"
@@ -35,7 +35,8 @@ if (-not $RebuildOnly) {
                 $d = [string]$x.ltRflYmd
                 $rows[[int]$x.ltEpsd] = @([int]$x.ltEpsd, ('{0}-{1}-{2}' -f $d.Substring(0,4), $d.Substring(4,2), $d.Substring(6,2)),
                     [long]$x.tm1WnNo, [long]$x.tm2WnNo, [long]$x.tm3WnNo, [long]$x.tm4WnNo, [long]$x.tm5WnNo, [long]$x.tm6WnNo,
-                    [long]$x.bnsWnNo, [long]$x.rnk1WnNope, [long]$x.rnk1WnAmt)
+                    [long]$x.bnsWnNo, [long]$x.rnk1WnNope, [long]$x.rnk1WnAmt,
+                    [long]$x.rnk2WnAmt, [long]$x.rnk3WnAmt, [long]$x.rnk4WnAmt, [long]$x.rnk5WnAmt)
             }
             Start-Sleep -Milliseconds 300
         }
@@ -54,12 +55,12 @@ if ($missing) { throw "빠진 회차가 있습니다: $($missing -join ', ')" }
 $csv = New-Object System.Text.StringBuilder
 [void]$csv.AppendLine((($cols | ForEach-Object { '"' + $_ + '"' }) -join ','))
 $js = New-Object System.Text.StringBuilder
-[void]$js.AppendLine('// 자동 생성 파일 (scripts/update.ps1). [회차, 추첨일, n1..n6, 보너스, 1등당첨자수, 1등당첨금]')
+[void]$js.AppendLine('// 자동 생성 파일 (scripts/update.ps1). [회차, 추첨일, n1..n6, 보너스, 1등당첨자수, 1~5등 1인당 당첨금]')
 [void]$js.AppendLine('window.LOTTO_DATA = [')
 foreach ($k in $keys) {
     $v = $rows[$k]
     [void]$csv.AppendLine((($v | ForEach-Object { '"' + $_ + '"' }) -join ','))
-    $line = '[{0},"{1}",{2}]' -f $v[0], $v[1], (($v[2..10]) -join ',')
+    $line = '[{0},"{1}",{2}]' -f $v[0], $v[1], (($v[2..14]) -join ',')
     [void]$js.AppendLine($line + $(if ($k -ne $after) { ',' } else { '' }))
 }
 [void]$js.AppendLine('];')
