@@ -97,6 +97,49 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .installbar span { flex: 1; min-width: 0; line-height: 1.5; }
 #installBtn { font: inherit; font-weight: 700; color: #fff; background: #12aeba; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
 #installClose { background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+.latest .latest-balls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin: 2px 0 12px; }
+.latest .latest-balls .ball { width: 40px; height: 40px; font-size: 16px; }
+.latest .plus { color: var(--muted); font-weight: 700; }
+.prizes { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 6px; }
+.prize { background: var(--bg); border-radius: 8px; padding: 8px 6px; text-align: center; min-width: 0; }
+.prize .rk { font-size: 12px; color: var(--muted); font-weight: 700; }
+.prize .amt { font-size: 13px; font-weight: 800; margin-top: 2px; word-break: keep-all; }
+.prize.first .amt { color: var(--warn); font-size: 15px; }
+.prize .cnt { font-size: 11px; color: var(--muted); }
+.shops { margin-top: 10px; font-size: 13px; }
+.shops summary { cursor: pointer; font-weight: 700; color: var(--accent); }
+.shops ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.6; }
+.shops li { margin-bottom: 6px; }
+.tag2 { font-size: 11px; color: var(--muted); margin-left: 4px; }
+.more-link { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--accent); text-decoration: none; font-weight: 700; }
+.small { font-size: 12px; color: var(--muted); margin: 10px 0 0; line-height: 1.6; }
+.h3 { font-size: 14px; margin: 14px 0 8px; }
+.h3:first-of-type { margin-top: 2px; }
+.md-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.md-item { display: grid; grid-template-columns: 28px 1fr auto; gap: 4px 10px; align-items: center; border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; }
+.md-rank { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; background: var(--bg); color: var(--muted); }
+.md-item:nth-child(1) .md-rank { background: #f5b800; color: #fff; }
+.md-item:nth-child(2) .md-rank { background: #a7adb7; color: #fff; }
+.md-item:nth-child(3) .md-rank { background: #c98a4b; color: #fff; }
+.md-body { min-width: 0; }
+.md-name { font-weight: 700; font-size: 14px; overflow-wrap: anywhere; }
+.md-addr { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+.md-map { color: var(--accent); text-decoration: none; font-weight: 700; margin-left: 2px; white-space: nowrap; }
+.md-wins { text-align: right; font-weight: 800; color: var(--warn); white-space: nowrap; font-size: 14px; }
+.md-wins small { display: block; font-weight: 600; color: var(--muted); font-size: 11px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.chip { font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--text); cursor: pointer; }
+.chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.more-btn { display: block; width: 100%; margin-top: 8px; padding: 9px; font: inherit; font-weight: 700; font-size: 13px; color: var(--accent); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.more-btn[hidden] { display: none; }
+@media (max-width: 600px) {
+  .prizes { grid-template-columns: repeat(2, 1fr); }
+  .prize.first { grid-column: 1 / -1; }
+  .latest .latest-balls .ball { width: 36px; height: 36px; font-size: 15px; }
+  .md-item { grid-template-columns: 26px 1fr; }
+  .md-wins { grid-column: 2; text-align: left; display: flex; gap: 6px; align-items: baseline; }
+  .md-wins small { display: inline; }
+}
 .storebar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: -2px 0 12px; }
 .storebar[hidden] { display: none; }
 .store { display: inline-flex; height: 44px; border-radius: 8px; text-decoration: none; }
@@ -158,6 +201,25 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   <h1>로또 6/45 당첨번호</h1>
   <p class="sub" id="sub"></p>
 
+  <div class="panel latest">
+    <h2><span id="latestTitle">최신 당첨번호</span> <small id="latestDate"></small></h2>
+    <div class="latest-balls" id="latestBalls"></div>
+    <div class="prizes" id="latestPrizes"></div>
+    <details class="shops" id="latestShopsBox" hidden><summary id="latestShopsSum">이번 회차 1등 판매점</summary><ul id="latestShops"></ul></details>
+    <a class="more-link" href="#history">회차별 당첨번호 보기 ↓</a>
+  </div>
+
+  <div class="panel" id="mdPanel" hidden>
+    <h2>🍀 로또 명당 <small id="mdNote">1등 배출 판매점 기준</small></h2>
+    <h3 class="h3">🏆 전국 명당 TOP 5</h3>
+    <ol class="md-list" id="mdNational"></ol>
+    <h3 class="h3">📍 지역별 명당</h3>
+    <div class="chips" id="mdChips"></div>
+    <ol class="md-list" id="mdRegion"></ol>
+    <button class="more-btn" id="mdMore" hidden>더 보기</button>
+    <p class="small" id="mdFoot"></p>
+  </div>
+
   <div class="cards" id="cards"></div>
 
   <div class="panel">
@@ -167,7 +229,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
     <div class="rank" id="rank"></div>
   </div>
 
-  <div class="panel">
+  <div class="panel" id="history">
     <h2>회차별 당첨번호 <small class="count" id="count"></small></h2>
     <div class="controls">
       <input id="q" type="search" placeholder="회차·번호·날짜 검색 (예: 1245, 7 13)">
@@ -186,6 +248,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 </div>
 
 <script src="data/lotto.js"></script>
+<script src="data/stores.js"></script>
 <script>if (!window.LOTTO_DATA) document.body.innerHTML = '<p style="padding:24px;font-family:sans-serif">데이터 파일(data/lotto.js)을 불러오지 못했습니다.</p>';</script>
 <script>
 // [회차, 추첨일, n1..n6, 보너스, 1등당첨자수, 1등당첨금]
@@ -295,6 +358,54 @@ $('more').addEventListener('click', () => renderTable(true));
 $('year').addEventListener('change', () => { renderFreq(); renderTable(); });
 
 renderFreq(); renderTable();
+
+// ───────── 최신 당첨번호 ─────────
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const STORES = window.LOTTO_STORES || null;
+(function renderLatest() {
+  const won = v => v ? v.toLocaleString('ko-KR') + '원' : '-';
+  $('latestTitle').textContent = `${last[0]}회 당첨번호`;
+  $('latestDate').textContent = `${last[1]} 추첨`;
+  $('latestBalls').innerHTML = last.slice(2, 8).map(n => ball(n)).join('') + '<span class="plus">+</span>' + ball(last[8]);
+  const prizes = [[1, last[10], `${last[9]}명 당첨 · 1인당`], [2, last[11], '1인당'], [3, last[12], '1인당'], [4, last[13], '고정'], [5, last[14], '고정']];
+  $('latestPrizes').innerHTML = prizes.map(([r, amt, note]) =>
+    `<div class="prize${r === 1 ? ' first' : ''}"><div class="rk">${r}등</div><div class="amt">${won(amt)}</div><div class="cnt">${amt ? note : ''}</div></div>`).join('');
+  if (STORES && STORES.to === last[0] && STORES.latest && STORES.latest.length) {
+    $('latestShopsBox').hidden = false;
+    $('latestShopsSum').textContent = `이번 회차 1등 판매점 ${STORES.latest.length}곳 보기`;
+    $('latestShops').innerHTML = STORES.latest.map(([name, addr, region, kind]) =>
+      `<li><b>${esc(name)}</b> <span class="tag2">${esc(kind)}</span><br><span class="tag2" style="margin:0">${esc(addr)}</span></li>`).join('');
+  }
+})();
+
+// ───────── 로또 명당 (1등 배출 판매점) ─────────
+(function renderMyeongdang() {
+  if (!STORES || !STORES.national || !STORES.national.length) return;
+  $('mdPanel').hidden = false;
+  $('mdNote').textContent = `${STORES.from}회~${STORES.to}회 1등 배출 기준`;
+  const item = (s, i) => {
+    const [name, addr, region, n, a, m, semi] = s;
+    const kinds = [a && `자동 ${a}`, m && `수동 ${m}`, semi && `반자동 ${semi}`].filter(Boolean).join(' · ');
+    const map = 'https://map.naver.com/p/search/' + encodeURIComponent(name + ' ' + addr);
+    return `<li class="md-item"><span class="md-rank">${i + 1}</span>
+      <div class="md-body"><div class="md-name">${esc(name)}</div><div class="md-addr">${esc(addr)} <a class="md-map" href="${map}" target="_blank" rel="noopener">지도</a></div></div>
+      <div class="md-wins">1등 ${n}회<small>${kinds}</small></div></li>`;
+  };
+  $('mdNational').innerHTML = STORES.national.slice(0, 5).map(item).join('');
+  const regs = Object.keys(STORES.regionWins).filter(r => STORES.regions[r] && STORES.regions[r].length);
+  let cur = regs.includes('서울') ? '서울' : regs[0], showAll = false;
+  const draw = () => {
+    $('mdChips').innerHTML = regs.map(r => `<button class="chip${r === cur ? ' on' : ''}" data-r="${esc(r)}">${esc(r)}</button>`).join('');
+    const list = STORES.regions[cur] || [];
+    $('mdRegion').innerHTML = list.slice(0, showAll ? 10 : 5).map(item).join('');
+    $('mdMore').hidden = list.length <= 5;
+    $('mdMore').textContent = showAll ? '접기' : `${cur} 명당 더 보기 (TOP ${Math.min(10, list.length)})`;
+  };
+  $('mdChips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; cur = b.dataset.r; showAll = false; draw(); });
+  $('mdMore').addEventListener('click', () => { showAll = !showAll; draw(); });
+  draw();
+  $('mdFoot').textContent = `판매점 ${STORES.storeCount.toLocaleString()}곳 집계 · 인터넷 구매 1등 ${STORES.online}회는 순위에서 제외 · 명당은 판매량이 많아 1등이 자주 나온 곳으로, 그곳에서 산다고 당첨 확률이 높아지지는 않습니다.`;
+})();
 </script>
 <script>
 // 홈 화면 앱(PWA): 오프라인용 서비스 워커 등록 + 설치 안내 바
