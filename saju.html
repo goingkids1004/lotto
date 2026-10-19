@@ -110,6 +110,12 @@ progress { width: 160px; }
 .installbar span { flex: 1; min-width: 0; line-height: 1.5; }
 #installBtn { font: inherit; font-weight: 700; color: #fff; background: #12aeba; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
 #installClose { background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+.brand { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.brand > a { min-width: 0; }
+.sharebtn { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: #fee500; color: #191919; font: inherit; font-weight: 800; font-size: 13px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.sharebtn:active { transform: scale(.96); }
+.sharetoast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: calc(100% - 32px); background: rgba(25,25,25,.92); color: #fff; font-size: 13px; line-height: 1.5; padding: 10px 14px; border-radius: 10px; z-index: 50; text-align: center; }
+@media (max-width: 400px) { .sharebtn { width: 36px; padding: 0; justify-content: center; } .sharebtn span { display: none; } .brand span { font-size: clamp(14px, 4.3vw, 20px); } }
 .storebar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: -2px 0 12px; }
 .storebar[hidden] { display: none; }
 .store { display: inline-flex; height: 44px; border-radius: 8px; text-decoration: none; }
@@ -189,7 +195,7 @@ progress { width: 160px; }
 </head>
 <body>
 <div class="wrap">
-  <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
+  <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a><button class="sharebtn" id="shareBtn" type="button" aria-label="카카오톡으로 공유하기" title="카카오톡으로 공유하기"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 3C6.48 3 2 6.58 2 11c0 2.83 1.84 5.31 4.6 6.72l-.95 3.48c-.08.3.25.54.51.37l4.15-2.74c.55.07 1.11.11 1.69.11 5.52 0 10-3.58 10-8S17.52 3 12 3z"/></svg><span>공유</span></button></header>
   <div class="storebar" id="storeBar">
     <a class="store gp" href="https://play.google.com/store/apps/details?id=kr.brightbom.lotto" target="_blank" rel="noopener" aria-label="Google Play에서 두꺼비로또 다운로드"><img src="badge-googleplay.png" alt="Google Play에서 다운로드" width="148" height="44"></a>
     <button class="store ios" id="iosBtn" type="button" aria-label="iPhone 앱 (App Store 심사 중)"><span class="t"><small>iPhone 앱</small><b>App Store</b></span><span class="tag3">심사 중</span></button>
@@ -451,13 +457,34 @@ try { const s = JSON.parse(localStorage.getItem('saju_input') || 'null'); if (s 
 })();
 </script>
 <script>
-// 상단 스토어 버튼: 설치된 앱 안에서는 숨기고, iOS 버튼은 심사 중 안내
+// 상단 스토어 버튼: iOS 버튼은 심사 중 안내
 (function () {
   const bar = document.getElementById('storeBar'); if (!bar) return;
-  const inApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true || document.referrer.startsWith('android-app://');
-  if (inApp) { bar.hidden = true; return; }
   const tip = document.getElementById('storeTip');
   document.getElementById('iosBtn').addEventListener('click', () => { tip.hidden = !tip.hidden; });
+})();
+</script>
+<script>
+// 카톡 공유 버튼: 휴대폰은 공유 창(카카오톡 선택), 그 외에는 링크 복사
+(function () {
+  const btn = document.getElementById('shareBtn'); if (!btn) return;
+  const toast = msg => { let t = document.querySelector('.sharetoast'); if (!t) { t = document.createElement('div'); t.className = 'sharetoast'; t.setAttribute('role', 'status'); document.body.appendChild(t); } t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => { t.hidden = true; }, 3200); };
+  const url = location.origin + location.pathname;
+  const data = { title: document.title, text: '두꺼비가 알려주는 로또당첨번호 🐸🍀 당첨번호·예상번호·명당·QR 당첨확인', url };
+  const legacyCopy = () => {
+    const ta = document.createElement('textarea'); ta.value = url; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); return ok;
+  };
+  const copy = () => {
+    const done = () => toast('링크를 복사했어요. 카카오톡 대화창에 붙여넣기 해 주세요!');
+    const fail = () => toast('이 링크를 복사해 카카오톡에 붙여넣어 주세요: ' + url);
+    if (legacyCopy()) { done(); return; }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, fail); else fail();
+  };
+  btn.addEventListener('click', async () => {
+    if (navigator.share) { try { await navigator.share(data); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+    copy();
+  });
 })();
 </script>
 </body>
