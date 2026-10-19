@@ -110,6 +110,18 @@ progress { width: 160px; }
 .installbar span { flex: 1; min-width: 0; line-height: 1.5; }
 #installBtn { font: inherit; font-weight: 700; color: #fff; background: #12aeba; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; white-space: nowrap; }
 #installClose { background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+.storebar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: -2px 0 12px; }
+.storebar[hidden] { display: none; }
+.store { display: inline-flex; height: 44px; border-radius: 8px; text-decoration: none; }
+.store.gp img { height: 44px; width: auto; display: block; }
+.store.ios { align-items: center; gap: 8px; min-width: 148px; padding: 0 12px; background: #000; color: #fff; border: 1px solid #a6a6a6; font: inherit; cursor: pointer; }
+.store.ios .t { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
+.store.ios small { font-size: 10px; opacity: .8; }
+.store.ios b { font-size: 16px; letter-spacing: -.2px; }
+.store.ios .tag3 { font-size: 10px; font-weight: 800; color: #1d2330; background: #f5b800; border-radius: 999px; padding: 2px 7px; white-space: nowrap; }
+@media (max-width: 360px) { .store { height: 40px; } .store.gp img { height: 40px; } .store.ios { min-width: 0; padding: 0 9px; gap: 6px; } .store.ios b { font-size: 14px; } }
+.storetip { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid #f5b800; border-radius: 8px; padding: 9px 12px; margin: -4px 0 14px; font-size: 13px; line-height: 1.6; }
+.storetip[hidden] { display: none; }
 .nw { white-space: nowrap; }
 .foot { color: var(--muted); font-size: 12px; text-align: center; margin-top: 8px; }
 @media (max-width: 600px) {
@@ -173,6 +185,11 @@ progress { width: 160px; }
 <body>
 <div class="wrap">
   <header class="brand"><a href="./"><img src="logo.png" alt="두꺼비 로고" onerror="this.style.display='none'"><span>두꺼비가 알려주는 로또당첨번호</span></a></header>
+  <div class="storebar" id="storeBar">
+    <a class="store gp" href="https://play.google.com/store/apps/details?id=kr.brightbom.lotto" target="_blank" rel="noopener" aria-label="Google Play에서 두꺼비로또 다운로드"><img src="badge-googleplay.png" alt="Google Play에서 다운로드" width="148" height="44"></a>
+    <button class="store ios" id="iosBtn" type="button" aria-label="iPhone 앱 (App Store 심사 중)"><span class="t"><small>iPhone 앱</small><b>App Store</b></span><span class="tag3">심사 중</span></button>
+  </div>
+  <div class="storetip" id="storeTip" hidden>🍎 <b>iPhone 앱은 지금 앱스토어 심사 중이에요.</b> 조금만 기다려 주세요!<br>그동안에는 사파리에서 <b>공유 버튼(□↑) → "홈 화면에 추가"</b>로 앱처럼 설치해 쓸 수 있어요.</div>
   <nav class="topnav"><a href="predict.html">예상번호<span class="x"> 생성</span></a><a href="./">당첨번호<span class="x"> 조회</span></a><a href="saju.html">사주<span class="x"> 행운</span>번호</a><a href="check.html" class="on">QR<span class="x"> 당첨</span>확인</a></nav>
   <div class="installbar" id="installBar" hidden><span id="installText">📲 <b>두꺼비로또</b>를 앱으로 설치하기</span><button id="installBtn">앱 설치</button><button id="installClose" aria-label="닫기">✕</button></div>
 
@@ -425,6 +442,16 @@ if (/[?&]v=/.test(location.search)) handleQRText(location.href, 'QR 링크');
   });
   document.getElementById('installClose').addEventListener('click', () => { bar.hidden = true; try { localStorage.setItem('installbar_closed', String(Date.now())); } catch (e) {} });
   window.addEventListener('appinstalled', () => { bar.hidden = true; });
+})();
+</script>
+<script>
+// 상단 스토어 버튼: 설치된 앱 안에서는 숨기고, iOS 버튼은 심사 중 안내
+(function () {
+  const bar = document.getElementById('storeBar'); if (!bar) return;
+  const inApp = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true || document.referrer.startsWith('android-app://');
+  if (inApp) { bar.hidden = true; return; }
+  const tip = document.getElementById('storeTip');
+  document.getElementById('iosBtn').addEventListener('click', () => { tip.hidden = !tip.hidden; });
 })();
 </script>
 </body>
