@@ -33,6 +33,11 @@ jobs:
         shell: pwsh
         run: ./scripts/update.ps1
 
+      - name: 명당(1등 판매점) 데이터 갱신
+        if: github.event_name != 'push'
+        shell: pwsh
+        run: ./scripts/stores.ps1
+
       - name: 바뀐 데이터 저장(커밋)
         if: github.event_name != 'push'
         run: |
