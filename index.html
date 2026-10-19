@@ -63,7 +63,7 @@ input { flex: 1 1 220px; }
 .ball.hl { outline: 3px solid var(--text); outline-offset: 1px; }
 .balls { display: flex; gap: 4px; align-items: center; flex-wrap: nowrap; }
 .plus { color: var(--muted); margin: 0 2px; }
-.tablewrap { overflow-x: auto; max-height: 560px; overflow-y: auto; border: 1px solid var(--line); border-radius: 8px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
 th { position: sticky; top: 0; background: var(--panel); font-size: 12px; color: var(--muted); z-index: 1; }
@@ -228,14 +228,13 @@ function hlSet() {
   return s;
 }
 
-// 휴대폰에서는 50회차씩 보여주고 [더 보기]로 이어서 표시 (PC는 전체)
-const PAGE = 50;
-let shown = PAGE;
-const paged = () => window.innerWidth > 0 && window.innerWidth <= 600;
+// 처음엔 최근 5회차만 보여주고 [더 보기]를 누를 때마다 10회차씩 더 표시
+const FIRST = 5, PAGE = 10;
+let shown = FIRST;
 
 function renderTable(more) {
-  shown = more === true ? shown + PAGE : PAGE;
-  const all = filtered(), hl = hlSet(), rows = paged() ? all.slice(0, shown) : all;
+  shown = more === true ? shown + PAGE : FIRST;
+  const all = filtered(), hl = hlSet(), rows = all.slice(0, shown);
   $('count').textContent = `${all.length.toLocaleString()}건` + (pickNum ? ` · ${pickNum}번 포함 회차` : '');
   $('tbody').innerHTML = rows.map(d => `<tr>
     <td><b>${d[0]}</b></td><td>${d[1]}</td>
